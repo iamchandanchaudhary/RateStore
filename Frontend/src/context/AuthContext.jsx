@@ -5,7 +5,7 @@ export const AuthContext = createContext();
 const AUTH_STORAGE_KEY = "rateStoreAuth";
 
 const AuthContextProvider = ({ children }) => {
-    const backendUrl = import.meta.env.VITE_BACKEND_URL;
+    const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:8080";
 
     const [user, setUser] = useState(() => {
         if (typeof window === "undefined") {
@@ -41,9 +41,9 @@ const AuthContextProvider = ({ children }) => {
 
     const login = useCallback((payload) => {
         const nextUser = {
-            email: payload.email,
-            role: payload.role,
-            loggedInAt: new Date().toISOString()
+            role: "user",
+            loggedInAt: new Date().toISOString(),
+            ...payload
         };
 
         setUser(nextUser);

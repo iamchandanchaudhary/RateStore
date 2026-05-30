@@ -4,21 +4,70 @@ import { AuthContext } from "../context/AuthContext";
 import logo from "../assets/logo.png";
 
 const UserLogin = () => {
-  const { login } = useContext(AuthContext);
+  const { login, backendUrl } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
 
+  const [isSignup, setIsSignup] = useState(false);
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [address, setAddress] = useState("");
+  const [formError, setFormError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const trimmedEmail = email.trim();
-    login({ email: trimmedEmail, role: "user" });
+    if (isSubmitting) {
+      return;
+    }
 
-    const nextPath = location.state?.from?.pathname || "/user-dashboard";
-    navigate(nextPath, { replace: true });
+    setFormError("");
+    setIsSubmitting(true);
+
+    const trimmedEmail = email.trim().toLowerCase();
+    const endpoint = isSignup ? "/api/users/register" : "/api/users/login";
+    const baseUrl = backendUrl.endsWith("/")
+      ? backendUrl.slice(0, -1)
+      : backendUrl;
+    const payload = isSignup
+      ? {
+          name: name.trim(),
+          email: trimmedEmail,
+          password,
+          address: address.trim()
+        }
+      : {
+          email: trimmedEmail,
+          password
+        };
+
+    try {
+      const response = await fetch(`${baseUrl}${endpoint}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data.message || "Unable to complete request.");
+      }
+
+      const userPayload = data.user || { email: trimmedEmail, role: "user" };
+      login({ ...userPayload, role: userPayload.role || "user" });
+
+      const nextPath = location.state?.from?.pathname || "/user-dashboard";
+      navigate(nextPath, { replace: true });
+    } catch (error) {
+      setFormError(error.message || "Unable to complete request.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -33,13 +82,35 @@ const UserLogin = () => {
             <div className="space-y-6">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.35em] text-blue-500">
-                  User login
+                  {isSignup ? "User signup" : "User login"}
                 </p>
-                <h2 className="text-2xl font-semibold text-slate-900">Welcome Back 👋</h2>
-                <p className="text-sm text-slate-500">Login to access your User account.</p>
+                <h2 className="text-2xl font-semibold text-slate-900">
+                  {isSignup ? "Create your account" : "Welcome Back 👋"}
+                </h2>
+                <p className="text-sm text-slate-500">
+                  {isSignup
+                    ? "Create your User account to start reviewing stores."
+                    : "Login to access your User account."}
+                </p>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
+                {isSignup && (
+                  <label className="block text-sm font-semibold text-slate-700">
+                    Name
+                    <input
+                      type="text"
+                      name="name"
+                      value={name}
+                      onChange={(event) => setName(event.target.value)}
+                      placeholder="Enter name"
+                      autoComplete="name"
+                      required
+                      className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+                    />
+                  </label>
+                )}
+
                 <label className="block text-sm font-semibold text-slate-700">
                   Email
                   <input
@@ -54,16 +125,32 @@ const UserLogin = () => {
                   />
                 </label>
 
+                {isSignup && (
+                  <label className="block text-sm font-semibold text-slate-700">
+                    Address
+                    <input
+                      type="text"
+                      name="address"
+                      value={address}
+                      onChange={(event) => setAddress(event.target.value)}
+                      placeholder="Enter address"
+                      autoComplete="street-address"
+                      required
+                      className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+                    />
+                  </label>
+                )}
+
                 <label className="block text-sm font-semibold text-slate-700">
-                  Password
+                  {isSignup ? "Create Password" : "Password"}
                   <div className="relative mt-2">
                     <input
                       type="password"
                       name="password"
                       value={password}
                       onChange={(event) => setPassword(event.target.value)}
-                      placeholder="Enter password"
-                      autoComplete="current-password"
+                      placeholder={isSignup ? "Create password" : "Enter password"}
+                      autoComplete={isSignup ? "new-password" : "current-password"}
                       required
                       className="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 pr-12 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
                     />
@@ -75,22 +162,37 @@ const UserLogin = () => {
                   </div>
                 </label>
 
-                <div className="flex items-center justify-between text-sm">
-                  <label className="flex items-center gap-2 text-slate-600">
-                    <input type="checkbox" className="h-4 w-4 rounded border-slate-300" />
-                    Keep me signed in
-                  </label>
-                  <button type="button" className="cursor-pointer font-semibold text-blue-600 hover:text-blue-500">
-                    Forgot password?
-                  </button>
-                </div>
+                {!isSignup && (
+                  <div className="flex items-center justify-between text-sm">
+                    <label className="flex items-center gap-2 text-slate-600">
+                      <input type="checkbox" className="h-4 w-4 rounded border-slate-300" />
+                      Keep me signed in
+                    </label>
+                    <button type="button" className="cursor-pointer font-semibold text-blue-600 hover:text-blue-500">
+                      Forgot password?
+                    </button>
+                  </div>
+                )}
 
                 <button
                   type="submit"
-                  className="w-full rounded-xl bg-blue-600 py-3 mt-3 text-sm md:text-base cursor-pointer font-semibold text-white shadow-lg shadow-blue-200 transition hover:bg-blue-500"
+                  disabled={isSubmitting}
+                  className="mt-3 w-full rounded-xl bg-blue-600 py-3 text-sm md:text-base cursor-pointer font-semibold text-white shadow-lg shadow-blue-200 transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-70"
                 >
-                  Login
+                  {isSubmitting
+                    ? isSignup
+                      ? "Creating account..."
+                      : "Logging in..."
+                    : isSignup
+                      ? "Create account"
+                      : "Login"}
                 </button>
+
+                {formError && (
+                  <p className="text-sm text-red-600">
+                    {formError}
+                  </p>
+                )}
               </form>
 
               {/* <div className="space-y-3">
@@ -120,7 +222,17 @@ const UserLogin = () => {
               </div> */}
 
               <p className="text-center text-sm text-slate-500">
-                New here? <button className="cursor-pointer font-semibold text-blue-600">Create an account</button>
+                {isSignup ? "Already have an account? " : "New here? "}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFormError("");
+                    setIsSignup((prev) => !prev);
+                  }}
+                  className="cursor-pointer font-semibold text-blue-600"
+                >
+                  {isSignup ? "Sign in" : "Create an account"}
+                </button>
               </p>
             </div>
 

@@ -8,8 +8,11 @@ const StoreOwnerLogin = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const [isSignup, setIsSignup] = useState(false);
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [address, setAddress] = useState("");
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -33,13 +36,35 @@ const StoreOwnerLogin = () => {
             <div className="space-y-6">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.35em] text-blue-500">
-                  Store login
+                  {isSignup ? "Store signup" : "Store login"}
                 </p>
-                <h2 className="text-2xl font-semibold text-slate-900">Welcome Back 👋</h2>
-                <p className="text-sm text-slate-500">Login to access your Store account.</p>
+                <h2 className="text-2xl font-semibold text-slate-900">
+                  {isSignup ? "Create your store account" : "Welcome Back 👋"}
+                </h2>
+                <p className="text-sm text-slate-500">
+                  {isSignup
+                    ? "Create your Store account to manage reviews."
+                    : "Login to access your Store account."}
+                </p>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
+                {isSignup && (
+                  <label className="block text-sm font-semibold text-slate-700">
+                    Name
+                    <input
+                      type="text"
+                      name="name"
+                      value={name}
+                      onChange={(event) => setName(event.target.value)}
+                      placeholder="Enter name"
+                      autoComplete="name"
+                      required
+                      className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+                    />
+                  </label>
+                )}
+
                 <label className="block text-sm font-semibold text-slate-700">
                   Email
                   <input
@@ -54,35 +79,53 @@ const StoreOwnerLogin = () => {
                   />
                 </label>
 
+                {isSignup && (
+                  <label className="block text-sm font-semibold text-slate-700">
+                    Address
+                    <input
+                      type="text"
+                      name="address"
+                      value={address}
+                      onChange={(event) => setAddress(event.target.value)}
+                      placeholder="Enter address"
+                      autoComplete="street-address"
+                      required
+                      className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+                    />
+                  </label>
+                )}
+
                 <label className="block text-sm font-semibold text-slate-700">
-                  Password
+                  {isSignup ? "Create Password" : "Password"}
                   <input
                     type="password"
                     name="password"
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
-                    placeholder="Enter password"
-                    autoComplete="current-password"
+                    placeholder={isSignup ? "Create password" : "Enter password"}
+                    autoComplete={isSignup ? "new-password" : "current-password"}
                     required
                     className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
                   />
                 </label>
 
-                <div className="flex items-center justify-between text-sm">
-                  <label className="flex items-center gap-2 text-slate-600">
-                    <input type="checkbox" className="h-4 w-4 rounded border-slate-300" />
-                    Keep me signed in
-                  </label>
-                  <button type="button" className="font-semibold text-blue-600 hover:text-blue-500">
-                    Forgot password?
-                  </button>
-                </div>
+                {!isSignup && (
+                  <div className="flex items-center justify-between text-sm">
+                    <label className="flex items-center gap-2 text-slate-600">
+                      <input type="checkbox" className="h-4 w-4 rounded border-slate-300" />
+                      Keep me signed in
+                    </label>
+                    <button type="button" className="cursor-pointer font-semibold text-blue-600 hover:text-blue-500">
+                      Forgot password?
+                    </button>
+                  </div>
+                )}
 
                 <button
                   type="submit"
                   className="w-full rounded-xl bg-blue-600 py-3 mt-3 text-sm md:text-base cursor-pointer font-semibold text-white shadow-lg shadow-blue-200 transition hover:bg-blue-500"
                 >
-                  Access Store
+                  {isSignup ? "Create account" : "Access Store"}
                 </button>
               </form>
 
@@ -113,7 +156,14 @@ const StoreOwnerLogin = () => {
               </div> */}
 
               <p className="text-center text-sm text-slate-500">
-                New here? <button className="cursor-pointer font-semibold text-blue-600">Create an account</button>
+                {isSignup ? "Already have an account? " : "New here? "}
+                <button
+                  type="button"
+                  onClick={() => setIsSignup((prev) => !prev)}
+                  className="cursor-pointer font-semibold text-blue-600"
+                >
+                  {isSignup ? "Sign in" : "Create an account"}
+                </button>
               </p>
             </div>
 
