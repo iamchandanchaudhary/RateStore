@@ -4,22 +4,59 @@ import { AuthContext } from "../context/AuthContext";
 import logo from "../assets/logo.png";
 
 const AdminLogin = () => {
-  const { login } = useContext(AuthContext);
+  const { login, backendUrl } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [formError, setFormError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const trimmedEmail = email.trim();
-    login({ email: trimmedEmail, role: "admin" });
+    if (isSubmitting) {
+      return;
+    }
 
-    const nextPath = location.state?.from?.pathname || "/admin";
-    navigate(nextPath, { replace: true });
+    setFormError("");
+    setIsSubmitting(true);
+
+    const trimmedEmail = email.trim().toLowerCase();
+    const baseUrl = backendUrl.endsWith("/")
+      ? backendUrl.slice(0, -1)
+      : backendUrl;
+
+    try {
+      const response = await fetch(`${baseUrl}/api/admin/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          email: trimmedEmail,
+          password
+        })
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data.message || "Unable to sign in.");
+      }
+
+      const adminPayload = data.user || { email: trimmedEmail, role: "admin" };
+      login({ ...adminPayload, role: adminPayload.role || "admin" });
+
+      const nextPath = location.state?.from?.pathname || "/admin";
+      navigate(nextPath, { replace: true });
+    } catch (error) {
+      setFormError(error.message || "Unable to sign in.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -99,10 +136,17 @@ const AdminLogin = () => {
 
                 <button
                   type="submit"
-                  className="w-full rounded-xl bg-blue-600 py-3 mt-3 text-sm md:text-base cursor-pointer font-semibold text-white shadow-lg shadow-blue-200 transition hover:bg-blue-500"
+                  disabled={isSubmitting}
+                  className="mt-3 w-full rounded-xl bg-blue-600 py-3 text-sm md:text-base cursor-pointer font-semibold text-white shadow-lg shadow-blue-200 transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-70"
                 >
-                  Login
+                  {isSubmitting ? "Logging in..." : "Login"}
                 </button>
+
+                {formError && (
+                  <p className="text-sm text-red-600">
+                    {formError}
+                  </p>
+                )}
               </form>
 
               {/* <div className="space-y-3">
@@ -130,6 +174,12 @@ const AdminLogin = () => {
                   </button>
                 </div>
               </div> */}
+
+                <div className="w-full flex justify-center mt-4">
+                    <Link to="/" className="text-sm text-center font-semibold text-blue-600 hover:text-blue-500">
+                        Switch role
+                    </Link>
+                </div>
             </div>
           </section>
         </div>

@@ -7,6 +7,7 @@ import userRoutes from "./routes/userRoutes.js";
 import { ensureUsersTable } from "./models/userModel.js";
 import storeOwnerRoutes from "./routes/storeOwnerRoutes.js";
 import { ensureStoreOwnersTable } from "./models/storeOwnerModel.js";
+import adminRoutes from "./routes/adminRoutes.js";
 
 // App config
 const app = express();
@@ -18,6 +19,7 @@ app.use(cors());
 
 app.use("/api/users", userRoutes);
 app.use("/api/store-owners", storeOwnerRoutes);
+app.use("/api/admin", adminRoutes);
 
 ensureUsersTable().catch((error) => {
     console.error("Failed to ensure users table:", error);
