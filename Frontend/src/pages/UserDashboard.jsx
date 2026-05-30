@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import UserNavbar from "../components/UserNavbar";
+import StarRating from "../components/StarRating";
 import { AuthContext } from "../context/AuthContext";
 
 const UserDashboard = () => {
@@ -12,6 +13,10 @@ const UserDashboard = () => {
 	const [stores, setStores] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [listError, setListError] = useState("");
+	const [searchQuery, setSearchQuery] = useState("");
+	const [categoryFilter, setCategoryFilter] = useState("all");
+	const [sortBy, setSortBy] = useState("date");
+	const [sortOrder, setSortOrder] = useState("desc");
 
 	useEffect(() => {
 		let isActive = true;
@@ -72,6 +77,62 @@ const UserDashboard = () => {
 		};
 	};
 
+	const categories = useMemo(() => {
+		const categoryValues = stores
+			.map((store) => (store?.category || "").trim())
+			.filter(Boolean);
+
+		return ["all", ...Array.from(new Set(categoryValues))];
+	}, [stores]);
+
+	const filteredStores = useMemo(() => {
+		const query = searchQuery.trim().toLowerCase();
+		const selectedCategory = categoryFilter.toLowerCase();
+		const orderMultiplier = sortOrder === "asc" ? 1 : -1;
+
+		const matchesQuery = (store) => {
+			if (!query) {
+				return true;
+			}
+
+			const fields = [store?.name, store?.description, store?.address, store?.category]
+				.filter(Boolean)
+				.map((value) => value.toLowerCase());
+
+			return fields.some((value) => value.includes(query));
+		};
+
+		const matchesCategory = (store) => {
+			if (selectedCategory === "all") {
+				return true;
+			}
+
+			return (store?.category || "").toLowerCase() === selectedCategory;
+		};
+
+		const sorted = stores
+			.filter((store) => matchesQuery(store) && matchesCategory(store))
+			.slice();
+
+		sorted.sort((storeA, storeB) => {
+			if (sortBy === "rating") {
+				const ratingA = Number(storeA?.averageRating) || 0;
+				const ratingB = Number(storeB?.averageRating) || 0;
+				return (ratingA - ratingB) * orderMultiplier;
+			}
+
+			const dateA = new Date(storeA?.createdAt || 0).getTime() || 0;
+			const dateB = new Date(storeB?.createdAt || 0).getTime() || 0;
+			return (dateA - dateB) * orderMultiplier;
+		});
+
+		return sorted;
+	}, [stores, searchQuery, categoryFilter, sortBy, sortOrder]);
+
+	const storeCountLabel = filteredStores.length === stores.length
+		? `${stores.length} stores available`
+		: `${filteredStores.length} of ${stores.length} stores`;
+
 	return (
 		<div className="relative min-h-screen overflow-hidden bg-slate-50 text-slate-900">
 			<div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_#dbeafe,_transparent_65%)]" />
@@ -92,9 +153,63 @@ const UserDashboard = () => {
 						</p>
 					</div>
 					<div className="rounded-2xl border border-slate-200/70 bg-white/80 px-4 py-3 text-sm text-slate-600">
-						<span className="font-semibold text-slate-900">{stores.length}</span> stores available
+						<span className="font-semibold text-slate-900">{storeCountLabel}</span>
 					</div>
 				</header>
+
+				<section className="mt-6 rounded-3xl border border-slate-200/70 bg-white/80 p-5 shadow-sm backdrop-blur">
+					<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-[1.4fr_0.8fr_0.8fr_0.8fr]">
+						<label className="block text-sm font-semibold text-slate-700">
+							Search stores
+							<input
+								type="text"
+								value={searchQuery}
+								onChange={(event) => setSearchQuery(event.target.value)}
+								placeholder="Search by name, address, or category"
+								className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+							/>
+						</label>
+
+						<label className="block text-sm font-semibold text-slate-700">
+							Category
+							<select
+								value={categoryFilter}
+								onChange={(event) => setCategoryFilter(event.target.value)}
+								className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+							>
+								{categories.map((category) => (
+									<option key={category} value={category}>
+										{category === "all" ? "All categories" : category}
+									</option>
+								))}
+							</select>
+						</label>
+
+						<label className="block text-sm font-semibold text-slate-700">
+							Sort by
+							<select
+								value={sortBy}
+								onChange={(event) => setSortBy(event.target.value)}
+								className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+							>
+								<option value="date">Date added</option>
+								<option value="rating">Rating</option>
+							</select>
+						</label>
+
+						<label className="block text-sm font-semibold text-slate-700">
+							Order
+							<select
+								value={sortOrder}
+								onChange={(event) => setSortOrder(event.target.value)}
+								className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+							>
+								<option value="desc">Descending</option>
+								<option value="asc">Ascending</option>
+							</select>
+						</label>
+					</div>
+				</section>
 
 				<section className="mt-10">
 					{isLoading && (
@@ -125,9 +240,15 @@ const UserDashboard = () => {
 						</div>
 					)}
 
-					{!isLoading && !listError && stores.length > 0 && (
+					{!isLoading && !listError && stores.length > 0 && filteredStores.length === 0 && (
+						<div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-sm text-slate-500">
+							No stores match your filters. Try adjusting the search or filters.
+						</div>
+					)}
+
+					{!isLoading && !listError && filteredStores.length > 0 && (
 						<div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-									{stores.map((store) => {
+									{filteredStores.map((store) => {
 										const { reviewCount, averageRating } = getRatingSummary(store);
 
 										return (
@@ -162,11 +283,17 @@ const UserDashboard = () => {
 										<p className="text-sm text-slate-600">{store.description}</p>
 
 													{reviewCount > 0 ? (
-														<p className="text-xs text-slate-500">
-															Rating {averageRating.toFixed(1)} / 5 · {reviewCount} review{reviewCount === 1 ? "" : "s"}
-														</p>
+														<div className="flex items-center gap-2 text-xs text-slate-500">
+															<StarRating value={averageRating} size="h-4 w-4" />
+															<span>
+																{averageRating.toFixed(1)} / 5 · {reviewCount} review{reviewCount === 1 ? "" : "s"}
+															</span>
+														</div>
 													) : (
-														<p className="text-xs text-slate-400">No ratings yet</p>
+														<div className="flex items-center gap-2 text-xs text-slate-400">
+															<StarRating value={0} size="h-4 w-4" />
+															<span>No ratings yet</span>
+														</div>
 													)}
 
 										<div className="space-y-1 text-xs text-slate-500">

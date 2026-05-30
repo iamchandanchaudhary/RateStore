@@ -5,7 +5,7 @@ const dbPromise = db.promise();
 export const ensureStoreRatingsTable = async () => {
     const createSql = `CREATE TABLE IF NOT EXISTS store_ratings (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        store_id INT NOT NULL,
+        store_id VARCHAR(36) NOT NULL,
         user_id INT NOT NULL,
         rating TINYINT NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -16,6 +16,7 @@ export const ensureStoreRatingsTable = async () => {
     )`;
 
     await dbPromise.query(createSql);
+    await dbPromise.query("ALTER TABLE store_ratings MODIFY store_id VARCHAR(36) NOT NULL").catch(() => null);
 };
 
 export const upsertStoreRating = async ({ storeId, userId, rating }) => {

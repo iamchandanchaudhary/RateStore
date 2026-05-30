@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import Navbar from "../components/UserNavbar";
+import StarRating from "../components/StarRating";
 import { AuthContext } from "../context/AuthContext";
 
 const StoreDetails = () => {
@@ -207,13 +208,17 @@ const StoreDetails = () => {
                   <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Rating</p>
                   {(() => {
                     const { reviewCount, averageRating } = getRatingSummary(store);
+                    const hasRatings = reviewCount > 0;
 
                     return (
-                      <p className="mt-1 text-sm text-slate-700">
-                        {reviewCount > 0
-                          ? `${averageRating.toFixed(1)} / 5 (${reviewCount} review${reviewCount === 1 ? "" : "s"})`
-                          : "No ratings yet"}
-                      </p>
+                      <div className="mt-2 space-y-1">
+                        <StarRating value={hasRatings ? averageRating : 0} size="h-4 w-4" />
+                        <p className="text-sm text-slate-700">
+                          {hasRatings
+                            ? `${averageRating.toFixed(1)} / 5 (${reviewCount} review${reviewCount === 1 ? "" : "s"})`
+                            : "No ratings yet"}
+                        </p>
+                      </div>
                     );
                   })()}
                 </div>
@@ -243,31 +248,26 @@ const StoreDetails = () => {
                 <p className="text-sm font-semibold text-slate-900">Rate this store</p>
                 <p className="text-xs text-slate-500">Select a rating from 1 to 5.</p>
                 {existingRating > 0 && (
-                  <p className="mt-2 text-xs text-slate-500">
-                    Your current rating: <span className="font-semibold text-slate-700">{existingRating}</span>
-                  </p>
+                  <div className="mt-2 flex items-center gap-2 text-xs text-slate-500">
+                    <StarRating value={existingRating} size="h-4 w-4" />
+                    <span>
+                      Your current rating: <span className="font-semibold text-slate-700">{existingRating}</span>
+                    </span>
+                  </div>
                 )}
 
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {[1, 2, 3, 4, 5].map((rating) => (
-                    <button
-                      key={`rating-${rating}`}
-                      type="button"
-                      onClick={() => {
-                        setSelectedRating(rating);
-                        setRatingError("");
-                        setRatingSuccess("");
-                      }}
-                      className={`rounded-full border px-4 py-2 text-xs font-semibold transition ${
-                        selectedRating === rating
-                          ? "border-blue-500 bg-blue-50 text-blue-600"
-                          : "border-slate-200 text-slate-600 hover:border-slate-300"
-                      }`}
-                      aria-pressed={selectedRating === rating}
-                    >
-                      {rating}
-                    </button>
-                  ))}
+                <div className="mt-4">
+                  <StarRating
+                    value={selectedRating}
+                    size="h-7 w-7"
+                    onChange={(rating) => {
+                      setSelectedRating(rating);
+                      setRatingError("");
+                      setRatingSuccess("");
+                    }}
+                    disabled={!user?.id || isRatingSubmitting}
+                    label="Select rating"
+                  />
                 </div>
 
                 <button

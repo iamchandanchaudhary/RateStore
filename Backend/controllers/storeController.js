@@ -1,3 +1,4 @@
+import { randomUUID } from "crypto";
 import { v2 as cloudinary } from "cloudinary";
 import {
     createStore,
@@ -16,6 +17,8 @@ const parseOwnerId = (value) => {
     const parsed = Number.parseInt(value, 10);
     return Number.isNaN(parsed) ? null : parsed;
 };
+
+const normalizeId = (value) => (typeof value === "string" ? value.trim() : "");
 
 const bufferToDataUri = (file) => `data:${file.mimetype};base64,${file.buffer.toString("base64")}`;
 
@@ -64,7 +67,10 @@ export const createStoreEntry = async (req, res) => {
             folder: "ratestore/stores"
         });
 
-        const storeId = await createStore({
+        const storeId = randomUUID();
+
+        await createStore({
+            storeId,
             ownerId,
             name,
             description,
@@ -127,10 +133,10 @@ export const listStoresForUsers = async (req, res) => {
 
 export const getStoreDetails = async (req, res) => {
     try {
-        const storeId = Number.parseInt(req.params?.storeId, 10);
+        const storeId = normalizeId(req.params?.storeId);
         const userId = parseOwnerId(req.query?.userId);
 
-        if (Number.isNaN(storeId)) {
+        if (!storeId) {
             return res.status(400).json({
                 message: "Store id is required."
             });
@@ -164,7 +170,7 @@ export const getStoreDetails = async (req, res) => {
 
 export const updateStoreEntry = async (req, res) => {
     try {
-        const storeId = Number.parseInt(req.params?.storeId, 10);
+        const storeId = normalizeId(req.params?.storeId);
         const ownerId = parseOwnerId(req.body?.ownerId);
         const name = normalizeText(req.body?.name);
         const description = normalizeText(req.body?.description);
@@ -228,10 +234,6 @@ export const updateStoreEntry = async (req, res) => {
         const updated = await findStoreByIdWithStats(storeId);
         const payload = updated ? buildStorePayload(updated) : null;
 
-        if (payload) {
-            payload.userRating = Number(rating);
-        }
-
         return res.status(200).json({
             store: payload
         });
@@ -245,7 +247,7 @@ export const updateStoreEntry = async (req, res) => {
 
 export const rateStore = async (req, res) => {
     try {
-        const storeId = Number.parseInt(req.params?.storeId, 10);
+        const storeId = normalizeId(req.params?.storeId);
         const userId = Number.parseInt(req.body?.userId, 10);
         const rating = Number(req.body?.rating);
 
@@ -286,7 +288,7 @@ export const rateStore = async (req, res) => {
 
 export const deleteStoreEntry = async (req, res) => {
     try {
-        const storeId = Number.parseInt(req.params?.storeId, 10);
+        const storeId = normalizeId(req.params?.storeId);
         const ownerId = parseOwnerId(req.body?.ownerId || req.query?.ownerId);
 
         if (!storeId || !ownerId) {

@@ -11,7 +11,7 @@ const storeWithRatingsSelect = `SELECT s.id, s.owner_id, s.name, s.description, 
 
 export const ensureStoresTable = async () => {
     const createSql = `CREATE TABLE IF NOT EXISTS stores (
-        id INT AUTO_INCREMENT PRIMARY KEY,
+        id VARCHAR(36) NOT NULL PRIMARY KEY,
         owner_id INT NOT NULL,
         name VARCHAR(150) NOT NULL,
         description TEXT NOT NULL,
@@ -25,15 +25,16 @@ export const ensureStoresTable = async () => {
     )`;
 
     await dbPromise.query(createSql);
+    await dbPromise.query("ALTER TABLE stores MODIFY id VARCHAR(36) NOT NULL").catch(() => null);
 };
 
-export const createStore = async ({ ownerId, name, description, address, category, imageUrl, imagePublicId }) => {
-    const [result] = await dbPromise.query(
-        "INSERT INTO stores (owner_id, name, description, address, category, image_url, image_public_id) VALUES (?, ?, ?, ?, ?, ?, ?)",
-        [ownerId, name, description, address, category, imageUrl, imagePublicId]
+export const createStore = async ({ storeId, ownerId, name, description, address, category, imageUrl, imagePublicId }) => {
+    await dbPromise.query(
+        "INSERT INTO stores (id, owner_id, name, description, address, category, image_url, image_public_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        [storeId, ownerId, name, description, address, category, imageUrl, imagePublicId]
     );
 
-    return result.insertId;
+    return storeId;
 };
 
 export const listStoresByOwner = async (ownerId) => {

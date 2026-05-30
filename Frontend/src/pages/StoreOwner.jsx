@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import StoreOwnerNavbar from "../components/StoreOwnerNavbar";
+import StarRating from "../components/StarRating";
 import { AuthContext } from "../context/AuthContext";
 
 const StoreOwner = () => {
@@ -481,11 +482,17 @@ const StoreOwner = () => {
 												</div>
 												<p className="text-sm text-slate-600">{store.description}</p>
 												{reviewCount > 0 ? (
-													<p className="text-xs text-slate-500">
-														Rating {averageRating.toFixed(1)} / 5 · {reviewCount} review{reviewCount === 1 ? "" : "s"}
-													</p>
+													<div className="flex items-center gap-2 text-xs text-slate-500">
+														<StarRating value={averageRating} size="h-4 w-4" />
+														<span>
+															{averageRating.toFixed(1)} / 5 · {reviewCount} review{reviewCount === 1 ? "" : "s"}
+														</span>
+													</div>
 												) : (
-													<p className="text-xs text-slate-400">No ratings yet</p>
+													<div className="flex items-center gap-2 text-xs text-slate-400">
+														<StarRating value={0} size="h-4 w-4" />
+														<span>No ratings yet</span>
+													</div>
 												)}
 												<p className="text-xs text-slate-500">{store.address}</p>
 												{store.createdAt && (
