@@ -5,7 +5,9 @@ import RoleSelectionPage from './pages/RoleSelectionPage';
 import UserDashboard from './pages/UserDashboard';
 import StoreOwner from './pages/StoreOwner';
 import SystemAdministrator from './pages/SystemAdministrator';
-import RoleLoginPage from './pages/RoleLoginPage';
+import UserLogin from './pages/UserLogin';
+import StoreOwnerLogin from './pages/StoreOwnerLogin';
+import AdminLogin from './pages/AdminLogin';
 import ProtectedRoute from './components/ProtectedRoute';
 
 const App = () => {
@@ -14,7 +16,9 @@ const App = () => {
 
       <Routes>
         <Route path="/" element={<RoleSelectionPage />} />
-        <Route path="/login/:role" element={<RoleLoginPage />} />
+        <Route path="/login/user" element={<UserLogin />} />
+        <Route path="/login/store-owner" element={<StoreOwnerLogin />} />
+        <Route path="/login/admin" element={<AdminLogin />} />
         <Route
           path="/user-dashboard"
           element={
