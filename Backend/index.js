@@ -5,6 +5,8 @@ import connectCloudinary from "./config/cloudinary.js";
 import db from "./config/db.js";
 import userRoutes from "./routes/userRoutes.js";
 import { ensureUsersTable } from "./models/userModel.js";
+import storeOwnerRoutes from "./routes/storeOwnerRoutes.js";
+import { ensureStoreOwnersTable } from "./models/storeOwnerModel.js";
 
 // App config
 const app = express();
@@ -15,9 +17,14 @@ app.use(express.json());
 app.use(cors());
 
 app.use("/api/users", userRoutes);
+app.use("/api/store-owners", storeOwnerRoutes);
 
 ensureUsersTable().catch((error) => {
     console.error("Failed to ensure users table:", error);
+});
+
+ensureStoreOwnersTable().catch((error) => {
+    console.error("Failed to ensure store owners table:", error);
 });
 
 app.get("/", (req, res) => {
