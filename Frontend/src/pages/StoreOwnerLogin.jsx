@@ -190,8 +190,9 @@ const StoreOwnerLogin = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="mt-3 w-full rounded-xl bg-linear-to-br from-[#0141cb] to-[#00a9fd] py-3 text-sm md:text-base cursor-pointer font-semibold text-white shadow-lg shadow-blue-200 transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-70"
+                  className="flex items-center justify-center gap-2 mt-3 w-full rounded-xl bg-linear-to-br from-[#0141cb] to-[#00a9fd] py-3 text-sm md:text-base cursor-pointer font-semibold text-white shadow-lg shadow-blue-200 transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-70"
                 >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 fill-white" viewBox="0 -960 960 960"><path d="M480-120v-80h280v-560H480v-80h280q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H480Zm-80-160-55-58 102-102H120v-80h327L345-622l55-58 200 200-200 200Z" /></svg>
                   {isSubmitting
                     ? isSignup
                       ? "Creating account..."

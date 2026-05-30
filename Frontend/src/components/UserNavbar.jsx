@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import logo from '../assets/logo.png';
@@ -7,6 +7,7 @@ const UserNavbar = () => {
     const { user, logout } = useContext(AuthContext);
     const navigate = useNavigate();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const menuRef = useRef(null);
 
     const handleLogout = () => {
         logout();
@@ -20,6 +21,24 @@ const UserNavbar = () => {
     const handleCloseMenu = () => {
         setIsMenuOpen(false);
     };
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (!menuRef.current) {
+                return;
+            }
+
+            if (!menuRef.current.contains(event.target)) {
+                setIsMenuOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
 
     return (
         <nav className="relative z-20 border-b border-slate-200/70 bg-white/80 backdrop-blur">
@@ -47,7 +66,7 @@ const UserNavbar = () => {
                         Switch role
                     </Link>
 
-                    <div onClick={handleToggleMenu} className="cursor-pointer relative flex items-center gap-2">
+                    <div ref={menuRef} onClick={handleToggleMenu} className="cursor-pointer relative flex items-center gap-2">
                         <span
                             className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-linear-to-br from-[#0141cb] to-[#00a9fd] text-white transition hover:border-slate-300"
                             aria-haspopup="true"
