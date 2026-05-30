@@ -25,6 +25,15 @@ export const findUserByEmail = async (email) => {
     return rows[0] || null;
 };
 
+export const findUserById = async (userId) => {
+    const [rows] = await dbPromise.query(
+        "SELECT id, name, email, address, password_hash, role FROM users WHERE id = ? LIMIT 1",
+        [userId]
+    );
+
+    return rows[0] || null;
+};
+
 export const createUser = async ({ name, email, address, passwordHash }) => {
     const [result] = await dbPromise.query(
         "INSERT INTO users (name, email, address, password_hash, role) VALUES (?, ?, ?, ?, 'user')",
@@ -32,4 +41,22 @@ export const createUser = async ({ name, email, address, passwordHash }) => {
     );
 
     return result.insertId;
+};
+
+export const updateUserProfileById = async ({ userId, name, address }) => {
+    const [result] = await dbPromise.query(
+        "UPDATE users SET name = ?, address = ? WHERE id = ?",
+        [name, address, userId]
+    );
+
+    return result.affectedRows;
+};
+
+export const updateUserPasswordById = async ({ userId, passwordHash }) => {
+    const [result] = await dbPromise.query(
+        "UPDATE users SET password_hash = ? WHERE id = ?",
+        [passwordHash, userId]
+    );
+
+    return result.affectedRows;
 };

@@ -25,6 +25,15 @@ export const findStoreOwnerByEmail = async (email) => {
     return rows[0] || null;
 };
 
+export const findStoreOwnerById = async (ownerId) => {
+    const [rows] = await dbPromise.query(
+        "SELECT id, name, email, address, password_hash, role FROM store_owners WHERE id = ? LIMIT 1",
+        [ownerId]
+    );
+
+    return rows[0] || null;
+};
+
 export const createStoreOwner = async ({ name, email, address, passwordHash }) => {
     const [result] = await dbPromise.query(
         "INSERT INTO store_owners (name, email, address, password_hash, role) VALUES (?, ?, ?, ?, 'store-owner')",
@@ -32,4 +41,22 @@ export const createStoreOwner = async ({ name, email, address, passwordHash }) =
     );
 
     return result.insertId;
+};
+
+export const updateStoreOwnerProfileById = async ({ ownerId, name, address }) => {
+    const [result] = await dbPromise.query(
+        "UPDATE store_owners SET name = ?, address = ? WHERE id = ?",
+        [name, address, ownerId]
+    );
+
+    return result.affectedRows;
+};
+
+export const updateStoreOwnerPasswordById = async ({ ownerId, passwordHash }) => {
+    const [result] = await dbPromise.query(
+        "UPDATE store_owners SET password_hash = ? WHERE id = ?",
+        [passwordHash, ownerId]
+    );
+
+    return result.affectedRows;
 };

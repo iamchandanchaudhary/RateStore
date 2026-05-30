@@ -5,6 +5,8 @@ import RoleSelectionPage from './pages/RoleSelectionPage';
 import UserDashboard from './pages/UserDashboard';
 import StoreDetails from './pages/StoreDetails';
 import StoreOwner from './pages/StoreOwner';
+import UserProfile from './pages/UserProfile';
+import StoreOwnerProfile from './pages/StoreOwnerProfile';
 import SystemAdministrator from './pages/SystemAdministrator';
 import UserLogin from './pages/UserLogin';
 import StoreOwnerLogin from './pages/StoreOwnerLogin';
@@ -41,6 +43,22 @@ const App = () => {
           element={
             <ProtectedRoute requiredRole="store-owner">
               <StoreOwner />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile/user"
+          element={
+            <ProtectedRoute requiredRole="user">
+              <UserProfile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile/store-owner"
+          element={
+            <ProtectedRoute requiredRole="store-owner">
+              <StoreOwnerProfile />
             </ProtectedRoute>
           }
         />
