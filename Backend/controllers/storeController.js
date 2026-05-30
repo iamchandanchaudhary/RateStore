@@ -3,6 +3,7 @@ import {
     createStore,
     deleteStoreById,
     findStoreById,
+    listAllStores,
     listStoresByOwner,
     updateStoreById
 } from "../models/storeModel.js";
@@ -96,6 +97,50 @@ export const listStoresForOwner = async (req, res) => {
         console.error("Store list failed:", error);
         return res.status(500).json({
             message: "Unable to load stores right now."
+        });
+    }
+};
+
+export const listStoresForUsers = async (req, res) => {
+    try {
+        const stores = await listAllStores();
+
+        return res.status(200).json({
+            stores: stores.map(buildStorePayload)
+        });
+    } catch (error) {
+        console.error("Store list for users failed:", error);
+        return res.status(500).json({
+            message: "Unable to load stores right now."
+        });
+    }
+};
+
+export const getStoreDetails = async (req, res) => {
+    try {
+        const storeId = Number.parseInt(req.params?.storeId, 10);
+
+        if (Number.isNaN(storeId)) {
+            return res.status(400).json({
+                message: "Store id is required."
+            });
+        }
+
+        const store = await findStoreById(storeId);
+
+        if (!store) {
+            return res.status(404).json({
+                message: "Store not found."
+            });
+        }
+
+        return res.status(200).json({
+            store: buildStorePayload(store)
+        });
+    } catch (error) {
+        console.error("Store details failed:", error);
+        return res.status(500).json({
+            message: "Unable to load store details right now."
         });
     }
 };

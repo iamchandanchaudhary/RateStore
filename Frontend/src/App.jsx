@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import "./App.css";
 import RoleSelectionPage from './pages/RoleSelectionPage';
 import UserDashboard from './pages/UserDashboard';
+import StoreDetails from './pages/StoreDetails';
 import StoreOwner from './pages/StoreOwner';
 import SystemAdministrator from './pages/SystemAdministrator';
 import UserLogin from './pages/UserLogin';
@@ -24,6 +25,14 @@ const App = () => {
           element={
             <ProtectedRoute requiredRole="user">
               <UserDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/stores/:storeId"
+          element={
+            <ProtectedRoute requiredRole="user">
+              <StoreDetails />
             </ProtectedRoute>
           }
         />

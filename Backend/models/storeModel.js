@@ -38,6 +38,14 @@ export const listStoresByOwner = async (ownerId) => {
     return rows;
 };
 
+export const listAllStores = async () => {
+    const [rows] = await dbPromise.query(
+        "SELECT id, owner_id, name, description, address, category, image_url, image_public_id, created_at, updated_at FROM stores ORDER BY created_at DESC"
+    );
+
+    return rows;
+};
+
 export const findStoreById = async (storeId) => {
     const [rows] = await dbPromise.query(
         "SELECT id, owner_id, name, description, address, category, image_url, image_public_id, created_at, updated_at FROM stores WHERE id = ? LIMIT 1",
