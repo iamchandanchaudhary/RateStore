@@ -5,7 +5,7 @@ import logo from '../assets/logo.png';
 
 const RoleSelectionPage = () => {
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#fff] text-slate-900">
+    <div className="relative min-h-screen overflow-hidden bg-white text-slate-900">
       <main className="relative z-10 mx-auto grid w-full max-w-6xl gap-10 px-6 py-16 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:px-12">
         <header className="space-y-6">
           <div className="flex items-center gap-4">
@@ -69,9 +69,9 @@ const RoleSelectionPage = () => {
       <section className="relative z-10 mx-auto w-full max-w-6xl px-6 pb-20 lg:px-12">
         <div className="grid gap-6 md:grid-cols-3">
           <Link
-            to="/user-dashboard"
-            aria-label="Enter the User Dashboard"
-            className="group relative flex h-full flex-col gap-6 overflow-hidden rounded-3xl border border-slate-200/70 bg-gradient-to-br from-white/90 via-slate-50/70 to-slate-100/60 p-6 shadow-lg backdrop-blur transition duration-300 hover:border-slate-300/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/60"
+            to="/login/user"
+            aria-label="Sign in to access the User Dashboard"
+            className="group relative flex h-full flex-col gap-6 overflow-hidden rounded-3xl border border-slate-200/70 bg-linear-to-br from-white/90 via-slate-50/70 to-slate-100/60 p-6 shadow-lg backdrop-blur transition duration-300 hover:border-slate-300/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/60"
           >
             <div className="pointer-events-none absolute -right-10 -top-12 h-28 w-28 rounded-full bg-slate-300/40 blur-2xl transition duration-300 group-hover:scale-110" />
             <div className="pointer-events-none absolute -bottom-16 -left-8 h-28 w-28 rounded-full bg-slate-200/40 blur-2xl transition duration-300 group-hover:scale-110" />
@@ -99,9 +99,9 @@ const RoleSelectionPage = () => {
           </Link>
 
           <Link
-            to="/store-owner"
-            aria-label="Enter the Store Owner workspace"
-            className="group relative flex h-full flex-col gap-6 overflow-hidden rounded-3xl border border-slate-200/70 bg-gradient-to-br from-white/90 via-slate-50/70 to-slate-100/60 p-6 shadow-lg backdrop-blur transition duration-300 hover:border-slate-300/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/60"
+            to="/login/store-owner"
+            aria-label="Sign in to access the Store Owner workspace"
+            className="group relative flex h-full flex-col gap-6 overflow-hidden rounded-3xl border border-slate-200/70 bg-linear-to-br from-white/90 via-slate-50/70 to-slate-100/60 p-6 shadow-lg backdrop-blur transition duration-300 hover:border-slate-300/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/60"
           >
             <div className="pointer-events-none absolute -right-10 -top-12 h-28 w-28 rounded-full bg-slate-300/40 blur-2xl transition duration-300 group-hover:scale-110" />
             <div className="pointer-events-none absolute -bottom-16 -left-8 h-28 w-28 rounded-full bg-slate-200/40 blur-2xl transition duration-300 group-hover:scale-110" />
@@ -129,9 +129,9 @@ const RoleSelectionPage = () => {
           </Link>
 
           <Link
-            to="/admin"
-            aria-label="Enter the System Administrator control room"
-            className="group relative flex h-full flex-col gap-6 overflow-hidden rounded-xl border border-slate-200/70 bg-gradient-to-br from-white/90 via-slate-50/70 to-slate-100/60 p-6 shadow-lg backdrop-blur transition duration-300 hover:border-slate-300/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/60"
+            to="/login/admin"
+            aria-label="Sign in to access the System Administrator control room"
+            className="group relative flex h-full flex-col gap-6 overflow-hidden rounded-xl border border-slate-200/70 bg-linear-to-br from-white/90 via-slate-50/70 to-slate-100/60 p-6 shadow-lg backdrop-blur transition duration-300 hover:border-slate-300/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/60"
           >
             <div className="pointer-events-none absolute -right-10 -top-12 h-28 w-28 rounded-full bg-slate-300/40 blur-2xl transition duration-300 group-hover:scale-110" />
             <div className="pointer-events-none absolute -bottom-16 -left-8 h-28 w-28 rounded-full bg-slate-200/40 blur-2xl transition duration-300 group-hover:scale-110" />
