@@ -34,15 +34,15 @@ const UserLogin = () => {
       : backendUrl;
     const payload = isSignup
       ? {
-          name: name.trim(),
-          email: trimmedEmail,
-          password,
-          address: address.trim()
-        }
+        name: name.trim(),
+        email: trimmedEmail,
+        password,
+        address: address.trim()
+      }
       : {
-          email: trimmedEmail,
-          password
-        };
+        email: trimmedEmail,
+        password
+      };
 
     try {
       const response = await fetch(`${baseUrl}${endpoint}`, {
@@ -107,7 +107,7 @@ const UserLogin = () => {
                       placeholder="Enter name"
                       autoComplete="name"
                       required
-                      className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+                      className="mt-2 w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
                     />
                   </label>
                 )}
@@ -122,7 +122,7 @@ const UserLogin = () => {
                     placeholder="Enter email"
                     autoComplete="email"
                     required
-                    className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+                    className="mt-2 w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
                   />
                 </label>
 
@@ -137,7 +137,7 @@ const UserLogin = () => {
                       placeholder="Enter address"
                       autoComplete="street-address"
                       required
-                      className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+                      className="mt-2 w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
                     />
                   </label>
                 )}
@@ -153,7 +153,7 @@ const UserLogin = () => {
                       placeholder={isSignup ? "Create password" : "Enter password"}
                       autoComplete={isSignup ? "new-password" : "current-password"}
                       required
-                      className="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 pr-12 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+                      className="w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-3 pr-12 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
                     />
                     <button
                       type="button"
@@ -190,7 +190,7 @@ const UserLogin = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="mt-3 w-full rounded-xl bg-blue-600 py-3 text-sm md:text-base cursor-pointer font-semibold text-white shadow-lg shadow-blue-200 transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-70"
+                  className="mt-3 w-full rounded-xl bg-linear-to-br from-[#0141cb] to-[#00a9fd]  py-3 text-sm md:text-base cursor-pointer font-semibold text-white shadow-lg shadow-blue-200 transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-70"
                 >
                   {isSubmitting
                     ? isSignup
@@ -249,10 +249,14 @@ const UserLogin = () => {
               </p>
             </div>
 
-            <div className="w-full flex justify-center mt-4">
-                <Link to="/" className="text-sm text-center font-semibold text-blue-600 hover:text-blue-500">
-                    Switch role
-                </Link>
+            <div className="w-full flex justify-center mt-2">
+              <Link
+                to="/"
+                className="cursor-pointer flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-4 py-2 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-slate-300"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="fill-slate-700 w-4 h-4" viewBox="0 -960 960 960"><path d="M280-120 80-320l200-200 57 56-104 104h607v80H233l104 104-57 56Zm400-320-57-56 104-104H120v-80h607L623-784l57-56 200 200-200 200Z" /></svg>
+                Switch role
+              </Link>
             </div>
           </section>
         </div>

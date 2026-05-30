@@ -201,7 +201,7 @@ const StoreDetails = () => {
               </div>
             </div>
 
-            <aside className="rounded-3xl border border-slate-200/70 bg-white/90 p-6 shadow-xl backdrop-blur">
+            <aside className="rounded-xl border border-slate-200/70 bg-white/90 p-6 shadow-xl backdrop-blur">
               <h2 className="text-lg font-semibold text-slate-900">Store details</h2>
               <div className="mt-4 space-y-4 text-sm text-slate-600">
                 <div>
@@ -274,7 +274,7 @@ const StoreDetails = () => {
                   type="button"
                   onClick={handleSubmitRating}
                   disabled={!selectedRating || isRatingSubmitting || !user?.id}
-                  className="mt-4 w-full rounded-xl bg-blue-600 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-200 transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-70"
+                  className="mt-4 w-full rounded-xl bg-linear-to-br from-[#0141cb] to-[#00a9fd] cursor-pointer py-3 text-sm font-semibold text-white shadow-lg shadow-blue-200 transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-70"
                 >
                   {isRatingSubmitting ? "Saving rating..." : ratingButtonLabel}
                 </button>

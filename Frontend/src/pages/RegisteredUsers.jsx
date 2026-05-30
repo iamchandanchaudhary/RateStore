@@ -243,12 +243,12 @@ const RegisteredUsers = () => {
                         <button
                             type="button"
                             onClick={() => setShowCreateForm((prev) => !prev)}
-                            className="rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-xs font-semibold text-blue-600 shadow-sm transition hover:border-blue-300"
+                            className="cursor-pointer rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-xs font-semibold text-blue-600 shadow-sm transition hover:border-blue-300"
                         >
-                            {showCreateForm ? "Hide form" : "Create new user"}
+                            {showCreateForm ? "Cancle" : "Create new user"}
                         </button>
-                        <span className="rounded-2xl border border-slate-200/70 bg-white/80 px-4 py-3 text-sm text-slate-600">
-                            <span className="font-semibold text-slate-900">{userCountLabel}</span>
+                        <span className="rounded-full text-xs text-slate-700 border border-slate-200/70 bg-white/80 px-4 py-2 shadow-sm">
+                            <span className="font-semibold">{userCountLabel}</span>
                         </span>
                         <Link
                             to="/admin"
@@ -260,7 +260,7 @@ const RegisteredUsers = () => {
                 </header>
 
                 {showCreateForm && (
-                    <section className="mt-8 rounded-3xl border border-slate-200/70 bg-white/90 p-6 shadow-xl backdrop-blur">
+                    <section className="mt-8 rounded-xl border border-slate-200/70 bg-white/90 p-6 shadow-xl backdrop-blur">
                         <div className="flex flex-wrap items-start justify-between gap-4">
                             <div>
                                 <h2 className="text-xl font-semibold text-slate-900">Create new user</h2>
@@ -278,7 +278,7 @@ const RegisteredUsers = () => {
                                     onChange={handleInputChange}
                                     placeholder="Enter name"
                                     autoComplete="name"
-                                    className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+                                    className="mt-2 w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
                                     required
                                 />
                             </label>
@@ -292,7 +292,7 @@ const RegisteredUsers = () => {
                                     onChange={handleInputChange}
                                     placeholder="Enter email"
                                     autoComplete="email"
-                                    className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+                                    className="mt-2 w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
                                     required
                                 />
                             </label>
@@ -306,7 +306,7 @@ const RegisteredUsers = () => {
                                     onChange={handleInputChange}
                                     placeholder="Enter address"
                                     autoComplete="street-address"
-                                    className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+                                    className="mt-2 w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
                                     required
                                 />
                             </label>
@@ -329,14 +329,14 @@ const RegisteredUsers = () => {
                                 <button
                                     type="submit"
                                     disabled={isSubmitting}
-                                    className="rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-200 transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-70"
+                                    className="rounded-xl bg-linear-to-br from-[#0141cb] to-[#00a9fd] cursor-pointer px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-200 transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-70"
                                 >
                                     {isSubmitting ? "Creating user..." : "Create user"}
                                 </button>
                                 <button
                                     type="button"
                                     onClick={resetForm}
-                                    className="rounded-xl border border-slate-200 bg-white/80 px-6 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300"
+                                    className="cursor-pointer rounded-xl border border-slate-200 bg-white/80 px-6 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300"
                                 >
                                     Clear
                                 </button>
@@ -417,7 +417,7 @@ const RegisteredUsers = () => {
                                                     type="button"
                                                     onClick={() => handleDelete(user.id)}
                                                     disabled={deletingId === user.id}
-                                                    className="rounded-full border border-red-200 bg-red-50 px-4 py-2 text-xs font-semibold text-red-600 transition hover:border-red-300 disabled:cursor-not-allowed disabled:opacity-70"
+                                                    className="cursor-pointer rounded-full border border-red-200 bg-red-50 px-4 py-2 text-xs font-semibold text-red-600 transition hover:border-red-300 disabled:cursor-not-allowed disabled:opacity-70"
                                                 >
                                                     {deletingId === user.id ? "Deleting..." : "Delete"}
                                                 </button>

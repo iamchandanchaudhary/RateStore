@@ -157,7 +157,7 @@ const UserDashboard = () => {
 					</div>
 				</header>
 
-				<section className="mt-6 rounded-3xl border border-slate-200/70 bg-white/80 p-5 shadow-sm backdrop-blur">
+				<section className="mt-6 rounded-xl border border-slate-200/70 bg-white/80 p-5 shadow-sm backdrop-blur">
 					<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-[1.4fr_0.8fr_0.8fr_0.8fr]">
 						<label className="block text-sm font-semibold text-slate-700">
 							Search stores
@@ -166,7 +166,7 @@ const UserDashboard = () => {
 								value={searchQuery}
 								onChange={(event) => setSearchQuery(event.target.value)}
 								placeholder="Search by name, address, or category"
-								className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+								className="mt-2 w-full rounded-xl border border-slate-200 bg-white/90 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
 							/>
 						</label>
 
@@ -175,7 +175,7 @@ const UserDashboard = () => {
 							<select
 								value={categoryFilter}
 								onChange={(event) => setCategoryFilter(event.target.value)}
-								className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+								className="mt-2 w-full rounded-xl border border-slate-200 bg-white/90 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
 							>
 								{categories.map((category) => (
 									<option key={category} value={category}>
@@ -190,7 +190,7 @@ const UserDashboard = () => {
 							<select
 								value={sortBy}
 								onChange={(event) => setSortBy(event.target.value)}
-								className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+								className="mt-2 w-full rounded-xl border border-slate-200 bg-white/90 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
 							>
 								<option value="date">Date added</option>
 								<option value="rating">Rating</option>
@@ -202,7 +202,7 @@ const UserDashboard = () => {
 							<select
 								value={sortOrder}
 								onChange={(event) => setSortOrder(event.target.value)}
-								className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+								className="mt-2 w-full rounded-xl border border-slate-200 bg-white/90 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
 							>
 								<option value="desc">Descending</option>
 								<option value="asc">Ascending</option>
@@ -248,74 +248,74 @@ const UserDashboard = () => {
 
 					{!isLoading && !listError && filteredStores.length > 0 && (
 						<div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-									{filteredStores.map((store) => {
-										const { reviewCount, averageRating } = getRatingSummary(store);
+							{filteredStores.map((store) => {
+								const { reviewCount, averageRating } = getRatingSummary(store);
 
-										return (
-								<article
-									key={store.id}
-									className="group overflow-hidden rounded-3xl border border-slate-200/70 bg-white/90 shadow-xl backdrop-blur transition hover:-translate-y-1 hover:shadow-2xl"
-								>
-									<div className="h-44 w-full overflow-hidden bg-slate-100">
-										{store.imageUrl ? (
-											<img
-												src={store.imageUrl}
-												alt={store.name}
-												className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-											/>
-										) : (
-											<div className="flex h-full items-center justify-center text-xs text-slate-400">
-												No image available
+								return (
+									<Link
+										to={`/stores/${store.id}`}
+										key={store.id}
+										className="group overflow-hidden rounded-3xl border border-slate-200/70 bg-white/90 shadow-xl backdrop-blur transition cursor-pointer"
+									>
+										<div className="h-44 w-full overflow-hidden bg-slate-100">
+											{store.imageUrl ? (
+												<img
+													src={store.imageUrl}
+													alt={store.name}
+													className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+												/>
+											) : (
+												<div className="flex h-full items-center justify-center text-xs text-slate-400">
+													No image available
+												</div>
+											)}
+										</div>
+
+										<div className="space-y-3 p-5">
+											<div className="flex items-start justify-between gap-3">
+												<h2 className="text-lg font-semibold text-slate-900">{store.name}</h2>
+												{store.category && (
+													<span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-600">
+														{store.category}
+													</span>
+												)}
 											</div>
-										)}
-									</div>
 
-												<div className="space-y-3 p-5">
-										<div className="flex items-start justify-between gap-3">
-											<h2 className="text-lg font-semibold text-slate-900">{store.name}</h2>
-											{store.category && (
-												<span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-600">
-													{store.category}
-												</span>
+											<p className="text-sm text-slate-600">{store.description}</p>
+
+											{reviewCount > 0 ? (
+												<div className="flex items-center gap-2 text-xs text-slate-500">
+													<StarRating value={averageRating} size="h-4 w-4" />
+													<span>
+														{averageRating.toFixed(1)} / 5 · {reviewCount} review{reviewCount === 1 ? "" : "s"}
+													</span>
+												</div>
+											) : (
+												<div className="flex items-center gap-2 text-xs text-slate-400">
+													<StarRating value={0} size="h-4 w-4" />
+													<span>No ratings yet</span>
+												</div>
 											)}
+
+											<div className="space-y-1 text-xs text-slate-500">
+												<p>{store.address}</p>
+												{store.createdAt && (
+													<p>Created on {formatDate(store.createdAt)}</p>
+												)}
+											</div>
+
+											<span
+												className="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 transition hover:text-blue-500"
+											>
+												View details
+												<svg viewBox="0 -960 960 960" className="h-4 w-4 fill-current" aria-hidden="true">
+													<path d="m560-240-56-58 142-142H160v-80h486L504-662l56-58 240 240-240 240Z" />
+												</svg>
+											</span>
 										</div>
-
-										<p className="text-sm text-slate-600">{store.description}</p>
-
-													{reviewCount > 0 ? (
-														<div className="flex items-center gap-2 text-xs text-slate-500">
-															<StarRating value={averageRating} size="h-4 w-4" />
-															<span>
-																{averageRating.toFixed(1)} / 5 · {reviewCount} review{reviewCount === 1 ? "" : "s"}
-															</span>
-														</div>
-													) : (
-														<div className="flex items-center gap-2 text-xs text-slate-400">
-															<StarRating value={0} size="h-4 w-4" />
-															<span>No ratings yet</span>
-														</div>
-													)}
-
-										<div className="space-y-1 text-xs text-slate-500">
-											<p>{store.address}</p>
-											{store.createdAt && (
-												<p>Created on {formatDate(store.createdAt)}</p>
-											)}
-										</div>
-
-										<Link
-											to={`/stores/${store.id}`}
-											className="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 transition hover:text-blue-500"
-										>
-											View details
-											<svg viewBox="0 -960 960 960" className="h-4 w-4 fill-current" aria-hidden="true">
-												<path d="m560-240-56-58 142-142H160v-80h486L504-662l56-58 240 240-240 240Z" />
-											</svg>
-										</Link>
-									</div>
-										</article>
-									);
-									})}
+									</Link>
+								);
+							})}
 						</div>
 					)}
 				</section>

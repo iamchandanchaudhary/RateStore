@@ -291,7 +291,7 @@ const StoreOwner = () => {
 				</header>
 
 				<div className="mt-10 grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
-					<section className="rounded-3xl border border-slate-200/70 bg-white/90 p-6 shadow-xl backdrop-blur">
+					<section className="rounded-xl border border-slate-200/70 bg-white/90 p-6 shadow-xl backdrop-blur">
 						<div className="flex flex-wrap items-start justify-between gap-4">
 							<div>
 								<h2 className="text-xl font-semibold text-slate-900">
@@ -307,7 +307,7 @@ const StoreOwner = () => {
 								<button
 									type="button"
 									onClick={resetForm}
-									className="rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600 transition hover:border-slate-300"
+									className="cursor-pointer rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600 transition hover:border-slate-300"
 								>
 									Cancel edit
 								</button>
@@ -324,7 +324,7 @@ const StoreOwner = () => {
 									onChange={handleInputChange}
 									placeholder="Enter store name"
 									required
-									className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+									className="mt-2 w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
 								/>
 							</label>
 
@@ -337,7 +337,7 @@ const StoreOwner = () => {
 									placeholder="Describe the store"
 									required
 									rows={4}
-									className="mt-2 w-full resize-none rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+									className="mt-2 w-full resize-none rounded-xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
 								/>
 							</label>
 
@@ -351,7 +351,7 @@ const StoreOwner = () => {
 										onChange={handleInputChange}
 										placeholder="Store address"
 										required
-										className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+										className="mt-2 w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
 									/>
 								</label>
 
@@ -364,7 +364,7 @@ const StoreOwner = () => {
 										onChange={handleInputChange}
 										placeholder="Ex: Grocery, Fashion"
 										required
-										className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+										className="mt-2 w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
 									/>
 								</label>
 							</div>
@@ -377,7 +377,7 @@ const StoreOwner = () => {
 										accept="image/*"
 										onChange={handleImageChange}
 										required={!isEditing}
-										className="mt-2 w-full text-sm text-slate-600 file:mr-4 file:rounded-full file:border-0 file:bg-blue-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-blue-500"
+										className="cursor-pointer mt-2 w-full text-sm text-slate-600 file:mr-4 file:rounded-full file:border-0 file:bg-blue-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-blue-500"
 									/>
 								</label>
 								<div className="flex h-32 items-center justify-center overflow-hidden rounded-2xl border border-dashed border-slate-200 bg-slate-50">
@@ -398,7 +398,7 @@ const StoreOwner = () => {
 							<button
 								type="submit"
 								disabled={isSubmitting}
-								className="mt-2 w-full rounded-xl bg-blue-600 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-200 transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-70"
+								className="mt-2 w-full rounded-xl bg-linear-to-br from-[#0141cb] to-[#00a9fd] cursor-pointer py-3 text-sm font-semibold text-white shadow-lg shadow-blue-200 transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-70"
 							>
 								{isSubmitting
 									? isEditing
@@ -418,7 +418,7 @@ const StoreOwner = () => {
 						</form>
 					</section>
 
-					<section className="rounded-3xl border border-slate-200/70 bg-white/90 p-6 shadow-xl backdrop-blur">
+					<section className="rounded-xl border border-slate-200/70 bg-white/90 p-6 shadow-xl backdrop-blur">
 						<div className="space-y-2">
 							<h2 className="text-xl font-semibold text-slate-900">Your stores</h2>
 							<p className="text-sm text-slate-500">
@@ -504,14 +504,14 @@ const StoreOwner = () => {
 													<button
 														type="button"
 														onClick={() => handleEdit(store)}
-														className="rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600 transition hover:border-slate-300"
+														className="cursor-pointer rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600 transition hover:border-slate-300"
 													>
 														Edit
 													</button>
 													<button
 														type="button"
 														onClick={() => handleDelete(store.id)}
-														className="rounded-full border border-red-200 px-3 py-1 text-xs font-semibold text-red-600 transition hover:border-red-300"
+														className="cursor-pointer rounded-full border border-red-200 px-3 py-1 text-xs font-semibold text-red-600 transition hover:border-red-300"
 													>
 														Delete
 													</button>

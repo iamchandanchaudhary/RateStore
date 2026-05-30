@@ -13,7 +13,7 @@ import RegisteredStores from './pages/RegisteredStores';
 import StoreList from './pages/StoreList';
 import UserLogin from './pages/UserLogin';
 import StoreOwnerLogin from './pages/StoreOwnerLogin';
-import AdminLogin from './pages/AdminLogin';
+import SystemAdministratorLogin from './pages/SystemAdministratorLogin';
 import ProtectedRoute from './components/ProtectedRoute';
 
 const App = () => {
@@ -24,7 +24,7 @@ const App = () => {
         <Route path="/" element={<RoleSelectionPage />} />
         <Route path="/login/user" element={<UserLogin />} />
         <Route path="/login/store-owner" element={<StoreOwnerLogin />} />
-        <Route path="/login/admin" element={<AdminLogin />} />
+        <Route path="/login/admin" element={<SystemAdministratorLogin />} />
         <Route
           path="/user-dashboard"
           element={

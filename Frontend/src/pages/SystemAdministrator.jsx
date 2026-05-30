@@ -8,19 +8,16 @@ const SystemAdministrator = () => {
             title: "Registered Users",
             description: "Review every user account and registration details.",
             to: "/admin/users",
-            accent: "bg-blue-600"
         },
         {
             title: "Registered Stores",
             description: "Track store owner registrations and contact information.",
             to: "/admin/store-owners",
-            accent: "bg-indigo-600"
         },
         {
             title: "Store List",
             description: "Inspect all created stores with their live details.",
             to: "/admin/stores",
-            accent: "bg-sky-600"
         }
     ];
 
@@ -35,16 +32,10 @@ const SystemAdministrator = () => {
             <main className="relative z-10 mx-auto w-full max-w-6xl px-6 py-10">
                 <header className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                     <div>
-                        <p className="text-xs font-semibold uppercase tracking-[0.35em] text-blue-500">
-                            System administrator
-                        </p>
-                        <h1 className="text-3xl font-semibold text-slate-900">Admin control room</h1>
+                        <h1 className="text-3xl font-semibold text-blue-600">System Administrator</h1>
                         <p className="text-sm text-slate-600">
                             Manage users, store owners, and live storefronts in one place.
                         </p>
-                    </div>
-                    <div className="rounded-2xl border border-slate-200/70 bg-white/80 px-4 py-3 text-sm text-slate-600">
-                        Select a workspace to continue
                     </div>
                 </header>
 
@@ -53,7 +44,7 @@ const SystemAdministrator = () => {
                         <Link
                             key={card.title}
                             to={card.to}
-                            className="group relative flex h-full flex-col gap-5 overflow-hidden rounded-3xl border border-slate-200/70 bg-white/90 p-6 shadow-lg backdrop-blur transition hover:-translate-y-1 hover:border-slate-300"
+                            className="group relative flex h-full flex-col gap-5 overflow-hidden rounded-2xl border border-slate-200/70 bg-white/90 p-6 shadow-lg backdrop-blur hover:border-slate-300"
                         >
                             <div className="pointer-events-none absolute -right-10 -top-12 h-28 w-28 rounded-full bg-slate-200/50 blur-2xl transition duration-300 group-hover:scale-110" />
                             <div className="pointer-events-none absolute -bottom-16 -left-8 h-28 w-28 rounded-full bg-slate-200/40 blur-2xl transition duration-300 group-hover:scale-110" />
@@ -66,11 +57,6 @@ const SystemAdministrator = () => {
                                     <p className="text-sm text-slate-600">
                                         {card.description}
                                     </p>
-                                </div>
-                                <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${card.accent} text-white`}>
-                                    <svg viewBox="0 -960 960 960" className="h-7 w-7 fill-current" aria-hidden="true">
-                                        <path d="m560-240-56-58 142-142H160v-80h486L504-662l56-58 240 240-240 240Z" />
-                                    </svg>
                                 </div>
                             </div>
 

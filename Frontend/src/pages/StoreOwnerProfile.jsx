@@ -252,7 +252,7 @@ const StoreOwnerProfile = () => {
                             <button
                                 type="button"
                                 onClick={handleCancelEdit}
-                                className="rounded-full border border-slate-200 bg-white/80 px-4 py-2 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-slate-300"
+                                className="cursor-pointer rounded-full border border-slate-200 bg-white/80 px-4 py-2 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-slate-300"
                             >
                                 Cancel edit
                             </button>
@@ -260,7 +260,7 @@ const StoreOwnerProfile = () => {
                             <button
                                 type="button"
                                 onClick={handleEditProfile}
-                                className="rounded-full border border-slate-200 bg-white/80 px-4 py-2 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-slate-300"
+                                className="cursor-pointer rounded-full border border-slate-200 bg-white/80 px-4 py-2 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-slate-300"
                             >
                                 Edit profile
                             </button>
@@ -275,7 +275,7 @@ const StoreOwnerProfile = () => {
                     </div>
                 </div>
 
-                <section className="mt-8 rounded-3xl border border-slate-200/70 bg-white/90 p-6 shadow-xl backdrop-blur">
+                <section className="mt-8 rounded-xl border border-slate-200/70 bg-white/90 p-6 shadow-xl backdrop-blur">
                     {isLoading ? (
                         <div className="space-y-3 text-sm text-slate-500">Loading profile...</div>
                     ) : (
@@ -297,7 +297,7 @@ const StoreOwnerProfile = () => {
                                         onChange={handleChange}
                                         required
                                         disabled={!isEditing}
-                                        className={`mt-2 w-full rounded-2xl border px-4 py-3 text-sm shadow-sm outline-none transition ${
+                                        className={`mt-2 w-full rounded-xl border px-4 py-3 text-sm shadow-sm outline-none transition ${
                                             isEditing
                                                 ? "border-slate-200 bg-white/80 text-slate-800 focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
                                                 : "border-slate-200 bg-slate-100 text-slate-500"
@@ -313,7 +313,7 @@ const StoreOwnerProfile = () => {
                                         value={formValues.email}
                                         readOnly
                                         disabled
-                                        className="mt-2 w-full cursor-not-allowed rounded-2xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-500 shadow-sm"
+                                        className="mt-2 w-full cursor-not-allowed rounded-xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-500 shadow-sm"
                                     />
                                 </label>
 
@@ -326,7 +326,7 @@ const StoreOwnerProfile = () => {
                                         onChange={handleChange}
                                         required
                                         disabled={!isEditing}
-                                        className={`mt-2 w-full rounded-2xl border px-4 py-3 text-sm shadow-sm outline-none transition ${
+                                        className={`mt-2 w-full rounded-xl border px-4 py-3 text-sm shadow-sm outline-none transition ${
                                             isEditing
                                                 ? "border-slate-200 bg-white/80 text-slate-800 focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
                                                 : "border-slate-200 bg-slate-100 text-slate-500"
@@ -338,7 +338,7 @@ const StoreOwnerProfile = () => {
                                     <button
                                         type="submit"
                                         disabled={isSaving}
-                                        className="mt-2 w-full rounded-xl bg-blue-600 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-200 transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-70"
+                                        className="cursor-pointer mt-2 w-full rounded-xl bg-linear-to-br from-[#0141cb] to-[#00a9fd] py-3 text-sm font-semibold text-white shadow-lg shadow-blue-200 transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-70"
                                     >
                                         {isSaving ? "Saving changes..." : "Save changes"}
                                     </button>
@@ -361,7 +361,7 @@ const StoreOwnerProfile = () => {
                                     <button
                                         type="button"
                                         onClick={handleTogglePassword}
-                                        className="rounded-full border border-slate-200 bg-white/80 px-4 py-2 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-slate-300"
+                                        className="cursor-pointer rounded-full border border-slate-200 bg-white/80 px-4 py-2 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-slate-300"
                                     >
                                         {isPasswordEditing ? "Cancel" : "Change Password"}
                                     </button>
@@ -403,7 +403,7 @@ const StoreOwnerProfile = () => {
                                             type="button"
                                             onClick={handlePasswordSubmit}
                                             disabled={isPasswordSaving}
-                                            className="mt-2 w-full rounded-xl bg-blue-600 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-200 transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-70"
+                                            className="mt-2 w-full rounded-xl bg-linear-to-br from-[#0141cb] to-[#00a9fd] cursor-pointer py-3 text-sm font-semibold text-white shadow-lg shadow-blue-200 transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-70"
                                         >
                                             {isPasswordSaving ? "Updating password..." : "Update password"}
                                         </button>
