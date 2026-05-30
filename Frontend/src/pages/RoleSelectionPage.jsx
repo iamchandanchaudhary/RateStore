@@ -9,7 +9,7 @@ const RoleSelectionPage = () => {
       <main className="relative z-10 mx-auto grid w-full max-w-6xl gap-10 px-6 py-16 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:px-12">
         <header className="space-y-6">
           <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/90 shadow-[0_15px_30px_-20px_rgba(15,23,42,0.4)]">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-200 text-sm font-semibold shadow-md">
               <img
                 src={logo}
                 alt="RateStore logo"

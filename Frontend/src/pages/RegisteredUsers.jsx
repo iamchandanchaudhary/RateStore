@@ -320,7 +320,7 @@ const RegisteredUsers = () => {
                                     onChange={handleInputChange}
                                     placeholder="Set a password"
                                     autoComplete="new-password"
-                                    className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+                                    className="mt-2 w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
                                     required
                                 />
                             </label>
@@ -352,7 +352,7 @@ const RegisteredUsers = () => {
                     </section>
                 )}
 
-                <section className="mt-8 rounded-3xl border border-slate-200/70 bg-white/80 p-6 shadow-xl backdrop-blur">
+                <section className="mt-8 rounded-xl border border-slate-200/70 bg-white/80 p-6 shadow-xl backdrop-blur">
                     {isLoading && (
                         <div className="space-y-3 text-sm text-slate-500">Loading users...</div>
                     )}

@@ -1,16 +1,52 @@
-# React + Vite
+# RateStore Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + Vite client for RateStore with role-based flows and protected routes.
 
-Currently, two official plugins are available:
+## Highlights
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Role selection landing page with tailored login flows.
+- User, store owner, and admin dashboards.
+- Rating and store discovery experience.
 
-## React Compiler
+## Setup
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+npm install
+npm run dev
+```
 
-## Expanding the ESLint configuration
+## Environment
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Update [Frontend/.env](Frontend/.env) to point at the backend API:
+
+```
+VITE_BACKEND_URL="http://localhost:8080"
+```
+
+## Routes
+
+- /: role selection
+- /login/user
+- /login/store-owner
+- /login/admin
+- /user-dashboard
+- /stores/:storeId
+- /store-owner
+- /profile/user
+- /profile/store-owner
+- /admin
+- /admin/users
+- /admin/store-owners
+- /admin/stores
+
+## Scripts
+
+- npm run dev
+- npm run build
+- npm run preview
+- npm run lint
+
+## Notes
+
+- Authentication state is stored in local storage under `rateStoreAuth`.
+- Protected routes check the current role before rendering.
