@@ -10,6 +10,7 @@ import { ensureStoreOwnersTable } from "./models/storeOwnerModel.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import storeRoutes from "./routes/storeRoutes.js";
 import { ensureStoresTable } from "./models/storeModel.js";
+import { ensureStoreRatingsTable } from "./models/storeRatingModel.js";
 
 // App config
 const app = express();
@@ -34,6 +35,10 @@ ensureStoreOwnersTable().catch((error) => {
 
 ensureStoresTable().catch((error) => {
     console.error("Failed to ensure stores table:", error);
+});
+
+ensureStoreRatingsTable().catch((error) => {
+    console.error("Failed to ensure store ratings table:", error);
 });
 
 app.get("/", (req, res) => {

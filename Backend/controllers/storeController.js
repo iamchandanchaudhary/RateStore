@@ -3,10 +3,12 @@ import {
     createStore,
     deleteStoreById,
     findStoreById,
-    listAllStores,
-    listStoresByOwner,
+    findStoreByIdWithStats,
+    listAllStoresWithStats,
+    listStoresByOwnerWithStats,
     updateStoreById
 } from "../models/storeModel.js";
+import { getUserRatingForStore, upsertStoreRating } from "../models/storeRatingModel.js";
 
 const normalizeText = (value) => (typeof value === "string" ? value.trim() : "");
 
@@ -17,6 +19,11 @@ const parseOwnerId = (value) => {
 
 const bufferToDataUri = (file) => `data:${file.mimetype};base64,${file.buffer.toString("base64")}`;
 
+const parseNumber = (value) => {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : 0;
+};
+
 const buildStorePayload = (store) => ({
     id: store.id,
     ownerId: store.owner_id,
@@ -26,6 +33,8 @@ const buildStorePayload = (store) => ({
     category: store.category,
     imageUrl: store.image_url,
     imagePublicId: store.image_public_id,
+    averageRating: parseNumber(store.average_rating ?? store.averageRating),
+    reviewCount: parseNumber(store.review_count ?? store.reviewCount),
     createdAt: store.created_at,
     updatedAt: store.updated_at
 });
@@ -65,7 +74,7 @@ export const createStoreEntry = async (req, res) => {
             imagePublicId: uploadResult.public_id
         });
 
-        const store = await findStoreById(storeId);
+        const store = await findStoreByIdWithStats(storeId);
 
         return res.status(201).json({
             store: store ? buildStorePayload(store) : null
@@ -88,7 +97,7 @@ export const listStoresForOwner = async (req, res) => {
             });
         }
 
-        const stores = await listStoresByOwner(ownerId);
+        const stores = await listStoresByOwnerWithStats(ownerId);
 
         return res.status(200).json({
             stores: stores.map(buildStorePayload)
@@ -103,7 +112,7 @@ export const listStoresForOwner = async (req, res) => {
 
 export const listStoresForUsers = async (req, res) => {
     try {
-        const stores = await listAllStores();
+        const stores = await listAllStoresWithStats();
 
         return res.status(200).json({
             stores: stores.map(buildStorePayload)
@@ -119,6 +128,7 @@ export const listStoresForUsers = async (req, res) => {
 export const getStoreDetails = async (req, res) => {
     try {
         const storeId = Number.parseInt(req.params?.storeId, 10);
+        const userId = parseOwnerId(req.query?.userId);
 
         if (Number.isNaN(storeId)) {
             return res.status(400).json({
@@ -126,7 +136,7 @@ export const getStoreDetails = async (req, res) => {
             });
         }
 
-        const store = await findStoreById(storeId);
+        const store = await findStoreByIdWithStats(storeId);
 
         if (!store) {
             return res.status(404).json({
@@ -134,8 +144,15 @@ export const getStoreDetails = async (req, res) => {
             });
         }
 
+        const payload = buildStorePayload(store);
+
+        if (userId) {
+            const userRating = await getUserRatingForStore(storeId, userId);
+            payload.userRating = userRating ? Number(userRating) : 0;
+        }
+
         return res.status(200).json({
-            store: buildStorePayload(store)
+            store: payload
         });
     } catch (error) {
         console.error("Store details failed:", error);
@@ -208,15 +225,61 @@ export const updateStoreEntry = async (req, res) => {
             imagePublicId
         });
 
-        const updated = await findStoreById(storeId);
+        const updated = await findStoreByIdWithStats(storeId);
+        const payload = updated ? buildStorePayload(updated) : null;
+
+        if (payload) {
+            payload.userRating = Number(rating);
+        }
 
         return res.status(200).json({
-            store: updated ? buildStorePayload(updated) : null
+            store: payload
         });
     } catch (error) {
         console.error("Store update failed:", error);
         return res.status(500).json({
             message: "Unable to update store right now."
+        });
+    }
+};
+
+export const rateStore = async (req, res) => {
+    try {
+        const storeId = Number.parseInt(req.params?.storeId, 10);
+        const userId = Number.parseInt(req.body?.userId, 10);
+        const rating = Number(req.body?.rating);
+
+        if (!storeId || !userId || !Number.isFinite(rating)) {
+            return res.status(400).json({
+                message: "Store id, user id, and rating are required."
+            });
+        }
+
+        if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+            return res.status(400).json({
+                message: "Rating must be between 1 and 5."
+            });
+        }
+
+        const existing = await findStoreById(storeId);
+
+        if (!existing) {
+            return res.status(404).json({
+                message: "Store not found."
+            });
+        }
+
+        await upsertStoreRating({ storeId, userId, rating });
+
+        const updated = await findStoreByIdWithStats(storeId);
+
+        return res.status(200).json({
+            store: updated ? buildStorePayload(updated) : null
+        });
+    } catch (error) {
+        console.error("Store rating failed:", error);
+        return res.status(500).json({
+            message: "Unable to save rating right now."
         });
     }
 };

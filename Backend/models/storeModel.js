@@ -2,6 +2,13 @@ import db from "../config/db.js";
 
 const dbPromise = db.promise();
 
+const storeWithRatingsSelect = `SELECT s.id, s.owner_id, s.name, s.description, s.address, s.category,
+    s.image_url, s.image_public_id, s.created_at, s.updated_at,
+    COALESCE(AVG(r.rating), 0) AS average_rating,
+    COUNT(r.id) AS review_count
+    FROM stores s
+    LEFT JOIN store_ratings r ON r.store_id = s.id`;
+
 export const ensureStoresTable = async () => {
     const createSql = `CREATE TABLE IF NOT EXISTS stores (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -46,6 +53,14 @@ export const listAllStores = async () => {
     return rows;
 };
 
+export const listAllStoresWithStats = async () => {
+    const [rows] = await dbPromise.query(
+        `${storeWithRatingsSelect} GROUP BY s.id ORDER BY s.created_at DESC`
+    );
+
+    return rows;
+};
+
 export const findStoreById = async (storeId) => {
     const [rows] = await dbPromise.query(
         "SELECT id, owner_id, name, description, address, category, image_url, image_public_id, created_at, updated_at FROM stores WHERE id = ? LIMIT 1",
@@ -53,6 +68,24 @@ export const findStoreById = async (storeId) => {
     );
 
     return rows[0] || null;
+};
+
+export const findStoreByIdWithStats = async (storeId) => {
+    const [rows] = await dbPromise.query(
+        `${storeWithRatingsSelect} WHERE s.id = ? GROUP BY s.id LIMIT 1`,
+        [storeId]
+    );
+
+    return rows[0] || null;
+};
+
+export const listStoresByOwnerWithStats = async (ownerId) => {
+    const [rows] = await dbPromise.query(
+        `${storeWithRatingsSelect} WHERE s.owner_id = ? GROUP BY s.id ORDER BY s.created_at DESC`,
+        [ownerId]
+    );
+
+    return rows;
 };
 
 export const updateStoreById = async ({ storeId, ownerId, name, description, address, category, imageUrl, imagePublicId }) => {

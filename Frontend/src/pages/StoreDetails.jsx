@@ -4,7 +4,7 @@ import Navbar from "../components/UserNavbar";
 import { AuthContext } from "../context/AuthContext";
 
 const StoreDetails = () => {
-  const { backendUrl } = useContext(AuthContext);
+  const { backendUrl, user } = useContext(AuthContext);
   const { storeId } = useParams();
   const baseUrl = useMemo(() => (
     backendUrl.endsWith("/") ? backendUrl.slice(0, -1) : backendUrl
@@ -13,6 +13,10 @@ const StoreDetails = () => {
   const [store, setStore] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
+  const [selectedRating, setSelectedRating] = useState(0);
+  const [isRatingSubmitting, setIsRatingSubmitting] = useState(false);
+  const [ratingError, setRatingError] = useState("");
+  const [ratingSuccess, setRatingSuccess] = useState("");
 
   useEffect(() => {
     let isActive = true;
@@ -26,9 +30,13 @@ const StoreDetails = () => {
 
       setIsLoading(true);
       setLoadError("");
+      setRatingError("");
+      setRatingSuccess("");
+      setSelectedRating(0);
 
       try {
-        const response = await fetch(`${baseUrl}/api/stores/${storeId}`);
+        const query = user?.id ? `?userId=${user.id}` : "";
+        const response = await fetch(`${baseUrl}/api/stores/${storeId}${query}`);
         const data = await response.json().catch(() => ({}));
 
         if (!response.ok) {
@@ -36,7 +44,9 @@ const StoreDetails = () => {
         }
 
         if (isActive) {
-          setStore(data.store || null);
+          const storePayload = data.store || null;
+          setStore(storePayload);
+          setSelectedRating(Number(storePayload?.userRating) || 0);
         }
       } catch (error) {
         if (isActive) {
@@ -54,7 +64,7 @@ const StoreDetails = () => {
     return () => {
       isActive = false;
     };
-  }, [baseUrl, storeId]);
+  }, [baseUrl, storeId, user?.id]);
 
   const formatDate = (value) => {
     if (!value) {
@@ -68,6 +78,64 @@ const StoreDetails = () => {
 
     return parsed.toLocaleDateString();
   };
+
+  const getRatingSummary = (value) => {
+    const reviewCount = Number(value?.reviewCount) || 0;
+    const averageRating = Number(value?.averageRating) || 0;
+
+    return {
+      reviewCount,
+      averageRating
+    };
+  };
+
+  const handleSubmitRating = async () => {
+    if (!storeId || !user?.id || isRatingSubmitting) {
+      return;
+    }
+
+    if (!selectedRating) {
+      setRatingError("Please select a rating.");
+      return;
+    }
+
+    setRatingError("");
+    setRatingSuccess("");
+    setIsRatingSubmitting(true);
+
+    try {
+      const response = await fetch(`${baseUrl}/api/stores/${storeId}/ratings`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          userId: user.id,
+          rating: selectedRating
+        })
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data.message || "Unable to save rating.");
+      }
+
+      if (data.store) {
+        setStore(data.store);
+        setSelectedRating(Number(data.store.userRating) || selectedRating);
+      }
+
+      setRatingSuccess("Rating saved. You can update it anytime.");
+    } catch (error) {
+      setRatingError(error.message || "Unable to save rating.");
+    } finally {
+      setIsRatingSubmitting(false);
+    }
+  };
+
+  const existingRating = Number(store?.userRating) || 0;
+  const ratingButtonLabel = existingRating ? "Update rating" : "Submit rating";
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-slate-50 text-slate-900">
@@ -136,6 +204,20 @@ const StoreDetails = () => {
               <h2 className="text-lg font-semibold text-slate-900">Store details</h2>
               <div className="mt-4 space-y-4 text-sm text-slate-600">
                 <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Rating</p>
+                  {(() => {
+                    const { reviewCount, averageRating } = getRatingSummary(store);
+
+                    return (
+                      <p className="mt-1 text-sm text-slate-700">
+                        {reviewCount > 0
+                          ? `${averageRating.toFixed(1)} / 5 (${reviewCount} review${reviewCount === 1 ? "" : "s"})`
+                          : "No ratings yet"}
+                      </p>
+                    );
+                  })()}
+                </div>
+                <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Address</p>
                   <p className="mt-1 text-sm text-slate-700">{store.address}</p>
                 </div>
@@ -154,6 +236,60 @@ const StoreDetails = () => {
                     <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Last updated</p>
                     <p className="mt-1 text-sm text-slate-700">{formatDate(store.updatedAt)}</p>
                   </div>
+                )}
+              </div>
+
+              <div className="mt-6 border-t border-slate-200/70 pt-5">
+                <p className="text-sm font-semibold text-slate-900">Rate this store</p>
+                <p className="text-xs text-slate-500">Select a rating from 1 to 5.</p>
+                {existingRating > 0 && (
+                  <p className="mt-2 text-xs text-slate-500">
+                    Your current rating: <span className="font-semibold text-slate-700">{existingRating}</span>
+                  </p>
+                )}
+
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {[1, 2, 3, 4, 5].map((rating) => (
+                    <button
+                      key={`rating-${rating}`}
+                      type="button"
+                      onClick={() => {
+                        setSelectedRating(rating);
+                        setRatingError("");
+                        setRatingSuccess("");
+                      }}
+                      className={`rounded-full border px-4 py-2 text-xs font-semibold transition ${
+                        selectedRating === rating
+                          ? "border-blue-500 bg-blue-50 text-blue-600"
+                          : "border-slate-200 text-slate-600 hover:border-slate-300"
+                      }`}
+                      aria-pressed={selectedRating === rating}
+                    >
+                      {rating}
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleSubmitRating}
+                  disabled={!selectedRating || isRatingSubmitting || !user?.id}
+                  className="mt-4 w-full rounded-xl bg-blue-600 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-200 transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-70"
+                >
+                  {isRatingSubmitting ? "Saving rating..." : ratingButtonLabel}
+                </button>
+
+                {!user?.id && (
+                  <p className="mt-3 text-xs text-slate-500">
+                    Please sign in again to submit a rating.
+                  </p>
+                )}
+
+                {ratingError && (
+                  <p className="mt-3 text-sm text-red-600">{ratingError}</p>
+                )}
+                {ratingSuccess && (
+                  <p className="mt-3 text-sm text-emerald-600">{ratingSuccess}</p>
                 )}
               </div>
             </aside>

@@ -62,6 +62,16 @@ const UserDashboard = () => {
 		return parsed.toLocaleDateString();
 	};
 
+	const getRatingSummary = (store) => {
+		const reviewCount = Number(store?.reviewCount) || 0;
+		const averageRating = Number(store?.averageRating) || 0;
+
+		return {
+			reviewCount,
+			averageRating
+		};
+	};
+
 	return (
 		<div className="relative min-h-screen overflow-hidden bg-slate-50 text-slate-900">
 			<div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_#dbeafe,_transparent_65%)]" />
@@ -117,7 +127,10 @@ const UserDashboard = () => {
 
 					{!isLoading && !listError && stores.length > 0 && (
 						<div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-							{stores.map((store) => (
+									{stores.map((store) => {
+										const { reviewCount, averageRating } = getRatingSummary(store);
+
+										return (
 								<article
 									key={store.id}
 									className="group overflow-hidden rounded-3xl border border-slate-200/70 bg-white/90 shadow-xl backdrop-blur transition hover:-translate-y-1 hover:shadow-2xl"
@@ -136,7 +149,7 @@ const UserDashboard = () => {
 										)}
 									</div>
 
-									<div className="space-y-3 p-5">
+												<div className="space-y-3 p-5">
 										<div className="flex items-start justify-between gap-3">
 											<h2 className="text-lg font-semibold text-slate-900">{store.name}</h2>
 											{store.category && (
@@ -147,6 +160,14 @@ const UserDashboard = () => {
 										</div>
 
 										<p className="text-sm text-slate-600">{store.description}</p>
+
+													{reviewCount > 0 ? (
+														<p className="text-xs text-slate-500">
+															Rating {averageRating.toFixed(1)} / 5 · {reviewCount} review{reviewCount === 1 ? "" : "s"}
+														</p>
+													) : (
+														<p className="text-xs text-slate-400">No ratings yet</p>
+													)}
 
 										<div className="space-y-1 text-xs text-slate-500">
 											<p>{store.address}</p>
@@ -165,8 +186,9 @@ const UserDashboard = () => {
 											</svg>
 										</Link>
 									</div>
-								</article>
-							))}
+										</article>
+									);
+									})}
 						</div>
 					)}
 				</section>

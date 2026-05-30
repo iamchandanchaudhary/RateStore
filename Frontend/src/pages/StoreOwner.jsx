@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import StoreOwnerNavbar from "../components/StoreOwnerNavbar";
 import { AuthContext } from "../context/AuthContext";
 
 const StoreOwner = () => {
@@ -257,11 +258,23 @@ const StoreOwner = () => {
 		return parsed.toLocaleDateString();
 	};
 
+	const getRatingSummary = (store) => {
+		const reviewCount = Number(store?.reviewCount) || 0;
+		const averageRating = Number(store?.averageRating) || 0;
+
+		return {
+			reviewCount,
+			averageRating
+		};
+	};
+
 	return (
 		<div className="relative min-h-screen overflow-hidden bg-slate-50 text-slate-900">
 			<div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_#dbeafe,_transparent_65%)]" />
 			<div className="absolute -top-24 right-0 h-64 w-64 rounded-full bg-blue-200/60 blur-3xl" />
 			<div className="absolute bottom-0 left-0 h-72 w-72 -translate-x-1/3 translate-y-1/4 rounded-full bg-sky-200/60 blur-3xl" />
+
+			<StoreOwnerNavbar />
 
 			<main className="relative z-10 mx-auto w-full max-w-6xl px-6 py-12">
 				<header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -274,15 +287,6 @@ const StoreOwner = () => {
 							Create, update, and maintain your store presence.
 						</p>
 					</div>
-					<Link
-						to="/"
-						className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300"
-					>
-						Switch role
-						<svg viewBox="0 -960 960 960" className="h-5 w-5 fill-slate-500" aria-hidden="true">
-							<path d="m560-240-56-58 142-142H160v-80h486L504-662l56-58 240 240-240 240Z" />
-						</svg>
-					</Link>
 				</header>
 
 				<div className="mt-10 grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
@@ -440,65 +444,76 @@ const StoreOwner = () => {
 								</div>
 							)}
 
-							{!isLoading && !listError && stores.map((store) => (
-								<article
-									key={store.id}
-									className={`overflow-hidden rounded-2xl border bg-white shadow-sm transition ${
-										editingStoreId === store.id
-											? "border-blue-400 ring-2 ring-blue-100"
-											: "border-slate-200"
-									}`}
-								>
-									<div className="grid gap-4 p-4 sm:grid-cols-[120px_1fr]">
-										<div className="h-28 w-full overflow-hidden rounded-xl bg-slate-100">
-											{store.imageUrl ? (
-												<img
-													src={store.imageUrl}
-													alt={store.name}
-													className="h-full w-full object-cover"
+							{!isLoading && !listError && stores.map((store) => {
+								const { reviewCount, averageRating } = getRatingSummary(store);
+
+								return (
+									<article
+										key={store.id}
+										className={`overflow-hidden rounded-2xl border bg-white shadow-sm transition ${
+											editingStoreId === store.id
+												? "border-blue-400 ring-2 ring-blue-100"
+												: "border-slate-200"
+										}`}
+									>
+										<div className="grid gap-4 p-4 sm:grid-cols-[120px_1fr]">
+											<div className="h-28 w-full overflow-hidden rounded-xl bg-slate-100">
+												{store.imageUrl ? (
+													<img
+														src={store.imageUrl}
+														alt={store.name}
+														className="h-full w-full object-cover"
 												/>
-											) : (
-												<div className="flex h-full items-center justify-center text-xs text-slate-400">
-													No image
-												</div>
-											)}
-										</div>
-										<div className="space-y-2">
-											<div className="flex flex-wrap items-center justify-between gap-2">
-												<h3 className="text-base font-semibold text-slate-900">{store.name}</h3>
-												{store.category && (
-													<span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-600">
-														{store.category}
-													</span>
+												) : (
+													<div className="flex h-full items-center justify-center text-xs text-slate-400">
+														No image
+													</div>
 												)}
 											</div>
-											<p className="text-sm text-slate-600">{store.description}</p>
-											<p className="text-xs text-slate-500">{store.address}</p>
-											{store.createdAt && (
-												<p className="text-xs text-slate-400">
-													Created on {formatDate(store.createdAt)}
-												</p>
-											)}
-											<div className="flex flex-wrap gap-2 pt-2">
-												<button
-													type="button"
-													onClick={() => handleEdit(store)}
-													className="rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600 transition hover:border-slate-300"
-												>
-													Edit
-												</button>
-												<button
-													type="button"
-													onClick={() => handleDelete(store.id)}
-													className="rounded-full border border-red-200 px-3 py-1 text-xs font-semibold text-red-600 transition hover:border-red-300"
-												>
-													Delete
-												</button>
+											<div className="space-y-2">
+												<div className="flex flex-wrap items-center justify-between gap-2">
+													<h3 className="text-base font-semibold text-slate-900">{store.name}</h3>
+													{store.category && (
+														<span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-600">
+															{store.category}
+														</span>
+													)}
+												</div>
+												<p className="text-sm text-slate-600">{store.description}</p>
+												{reviewCount > 0 ? (
+													<p className="text-xs text-slate-500">
+														Rating {averageRating.toFixed(1)} / 5 · {reviewCount} review{reviewCount === 1 ? "" : "s"}
+													</p>
+												) : (
+													<p className="text-xs text-slate-400">No ratings yet</p>
+												)}
+												<p className="text-xs text-slate-500">{store.address}</p>
+												{store.createdAt && (
+													<p className="text-xs text-slate-400">
+														Created on {formatDate(store.createdAt)}
+													</p>
+												)}
+												<div className="flex flex-wrap gap-2 pt-2">
+													<button
+														type="button"
+														onClick={() => handleEdit(store)}
+														className="rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600 transition hover:border-slate-300"
+													>
+														Edit
+													</button>
+													<button
+														type="button"
+														onClick={() => handleDelete(store.id)}
+														className="rounded-full border border-red-200 px-3 py-1 text-xs font-semibold text-red-600 transition hover:border-red-300"
+													>
+														Delete
+													</button>
+												</div>
 											</div>
 										</div>
-									</div>
-								</article>
-							))}
+									</article>
+								);
+							})}
 						</div>
 					</section>
 				</div>
