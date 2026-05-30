@@ -8,7 +8,7 @@ import SystemAdministrator from './pages/SystemAdministrator';
 
 const App = () => {
   return (
-    <div>
+    <div className=''>
 
       <Routes>
         <Route path="/" element={<RoleSelectionPage />} />
