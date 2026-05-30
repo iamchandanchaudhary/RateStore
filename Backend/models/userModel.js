@@ -60,3 +60,11 @@ export const updateUserPasswordById = async ({ userId, passwordHash }) => {
 
     return result.affectedRows;
 };
+
+export const listUsers = async () => {
+    const [rows] = await dbPromise.query(
+        "SELECT id, name, email, address, role, created_at FROM users ORDER BY created_at DESC"
+    );
+
+    return rows;
+};

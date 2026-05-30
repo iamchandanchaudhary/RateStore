@@ -8,6 +8,9 @@ import StoreOwner from './pages/StoreOwner';
 import UserProfile from './pages/UserProfile';
 import StoreOwnerProfile from './pages/StoreOwnerProfile';
 import SystemAdministrator from './pages/SystemAdministrator';
+import RegisteredUsers from './pages/RegisteredUsers';
+import RegisteredStores from './pages/RegisteredStores';
+import StoreList from './pages/StoreList';
 import UserLogin from './pages/UserLogin';
 import StoreOwnerLogin from './pages/StoreOwnerLogin';
 import AdminLogin from './pages/AdminLogin';
@@ -67,6 +70,30 @@ const App = () => {
           element={
             <ProtectedRoute requiredRole="admin">
               <SystemAdministrator />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/users"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <RegisteredUsers />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/store-owners"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <RegisteredStores />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/stores"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <StoreList />
             </ProtectedRoute>
           }
         />
