@@ -1,6 +1,9 @@
 import crypto from "crypto";
-import { listUsers } from "../models/userModel.js";
-import { listStoreOwners } from "../models/storeOwnerModel.js";
+import { v2 as cloudinary } from "cloudinary";
+import { deleteUserById, findUserById, listUsers } from "../models/userModel.js";
+import { deleteStoreOwnerById, findStoreOwnerById, listStoreOwners } from "../models/storeOwnerModel.js";
+import { findStoreById, listStoresByOwner, deleteStoreById } from "../models/storeModel.js";
+import { deleteStoreRatingsByStoreId, deleteStoreRatingsByUserId } from "../models/storeRatingModel.js";
 
 const safeEqual = (value, expected) => {
     if (typeof value !== "string" || typeof expected !== "string") {
@@ -15,6 +18,13 @@ const safeEqual = (value, expected) => {
     }
 
     return crypto.timingSafeEqual(valueBuf, expectedBuf);
+};
+
+const normalizeId = (value) => (typeof value === "string" ? value.trim() : "");
+
+const parseNumericId = (value) => {
+    const parsed = Number.parseInt(value, 10);
+    return Number.isNaN(parsed) ? null : parsed;
 };
 
 export const loginAdmin = (req, res) => {
@@ -101,6 +111,117 @@ export const listRegisteredStoreOwners = async (req, res) => {
         console.error("Admin store owner list failed:", error);
         return res.status(500).json({
             message: "Unable to load registered stores right now."
+        });
+    }
+};
+
+export const deleteRegisteredUser = async (req, res) => {
+    try {
+        const userId = parseNumericId(req.params?.userId);
+
+        if (!userId) {
+            return res.status(400).json({
+                message: "User id is required."
+            });
+        }
+
+        const existing = await findUserById(userId);
+
+        if (!existing) {
+            return res.status(404).json({
+                message: "User not found."
+            });
+        }
+
+        await deleteStoreRatingsByUserId(userId);
+        await deleteUserById(userId);
+
+        return res.status(200).json({
+            message: "User deleted."
+        });
+    } catch (error) {
+        console.error("Admin delete user failed:", error);
+        return res.status(500).json({
+            message: "Unable to delete user right now."
+        });
+    }
+};
+
+export const deleteRegisteredStoreOwner = async (req, res) => {
+    try {
+        const ownerId = parseNumericId(req.params?.ownerId);
+
+        if (!ownerId) {
+            return res.status(400).json({
+                message: "Store owner id is required."
+            });
+        }
+
+        const existing = await findStoreOwnerById(ownerId);
+
+        if (!existing) {
+            return res.status(404).json({
+                message: "Store owner not found."
+            });
+        }
+
+        const stores = await listStoresByOwner(ownerId);
+
+        for (const store of stores) {
+            await deleteStoreRatingsByStoreId(store.id);
+            await deleteStoreById(store.id, ownerId);
+
+            if (store.image_public_id) {
+                await cloudinary.uploader.destroy(store.image_public_id).catch(() => null);
+            }
+        }
+
+        await deleteStoreOwnerById(ownerId);
+
+        return res.status(200).json({
+            message: "Store owner deleted.",
+            removedStores: stores.length
+        });
+    } catch (error) {
+        console.error("Admin delete store owner failed:", error);
+        return res.status(500).json({
+            message: "Unable to delete store owner right now."
+        });
+    }
+};
+
+export const deleteStoreAsAdmin = async (req, res) => {
+    try {
+        const storeId = normalizeId(req.params?.storeId);
+
+        if (!storeId) {
+            return res.status(400).json({
+                message: "Store id is required."
+            });
+        }
+
+        const store = await findStoreById(storeId);
+
+        if (!store) {
+            return res.status(404).json({
+                message: "Store not found."
+            });
+        }
+
+        await deleteStoreRatingsByStoreId(storeId);
+        await deleteStoreById(storeId, store.owner_id);
+
+        if (store.image_public_id) {
+            await cloudinary.uploader.destroy(store.image_public_id).catch(() => null);
+        }
+
+        return res.status(200).json({
+            message: "Store deleted."
+        });
+    } catch (error) {
+        console.error("Admin delete store failed:", error);
+        return res.status(500).json({
+            message: "Unable to delete store right now."
         });
     }
 };

@@ -68,3 +68,12 @@ export const listUsers = async () => {
 
     return rows;
 };
+
+export const deleteUserById = async (userId) => {
+    const [result] = await dbPromise.query(
+        "DELETE FROM users WHERE id = ?",
+        [userId]
+    );
+
+    return result.affectedRows;
+};

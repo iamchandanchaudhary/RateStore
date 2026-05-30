@@ -13,6 +13,22 @@ const StoreList = () => {
     const [stores, setStores] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [listError, setListError] = useState("");
+    const [actionError, setActionError] = useState("");
+    const [deletingId, setDeletingId] = useState(null);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [showCreateForm, setShowCreateForm] = useState(false);
+    const [formValues, setFormValues] = useState({
+        ownerId: "",
+        name: "",
+        description: "",
+        address: "",
+        category: ""
+    });
+    const [imageFile, setImageFile] = useState(null);
+    const [imagePreview, setImagePreview] = useState("");
+    const [formError, setFormError] = useState("");
+    const [formSuccess, setFormSuccess] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         let isActive = true;
@@ -50,6 +66,12 @@ const StoreList = () => {
         };
     }, [baseUrl]);
 
+    useEffect(() => () => {
+        if (imagePreview && imagePreview.startsWith("blob:")) {
+            URL.revokeObjectURL(imagePreview);
+        }
+    }, [imagePreview]);
+
     const formatDate = (value) => {
         if (!value) {
             return "";
@@ -73,7 +95,187 @@ const StoreList = () => {
         };
     };
 
-    const storeCountLabel = `${stores.length} store${stores.length === 1 ? "" : "s"} created`;
+    const filteredStores = useMemo(() => {
+        const query = searchQuery.trim().toLowerCase();
+
+        if (!query) {
+            return stores;
+        }
+
+        return stores.filter((store) => {
+            const fields = [
+                store?.name,
+                store?.description,
+                store?.address,
+                store?.category,
+                store?.ownerId ? String(store.ownerId) : "",
+                store?.id ? String(store.id) : ""
+            ]
+                .filter(Boolean)
+                .map((value) => String(value).toLowerCase());
+
+            return fields.some((value) => value.includes(query));
+        });
+    }, [stores, searchQuery]);
+
+    const storeCountLabel = searchQuery.trim()
+        ? `${filteredStores.length} of ${stores.length} stores`
+        : `${stores.length} store${stores.length === 1 ? "" : "s"} created`;
+
+    const handleInputChange = (event) => {
+        const { name, value } = event.target;
+        setFormValues((prev) => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    const handleImageChange = (event) => {
+        const file = event.target.files?.[0] || null;
+        setFormError("");
+        setFormSuccess("");
+
+        if (imagePreview && imagePreview.startsWith("blob:")) {
+            URL.revokeObjectURL(imagePreview);
+        }
+
+        if (!file) {
+            setImageFile(null);
+            setImagePreview("");
+            return;
+        }
+
+        if (!file.type.startsWith("image/")) {
+            setFormError("Please select a valid image file.");
+            return;
+        }
+
+        const previewUrl = URL.createObjectURL(file);
+        setImageFile(file);
+        setImagePreview(previewUrl);
+    };
+
+    const resetForm = () => {
+        if (imagePreview && imagePreview.startsWith("blob:")) {
+            URL.revokeObjectURL(imagePreview);
+        }
+
+        setFormValues({
+            ownerId: "",
+            name: "",
+            description: "",
+            address: "",
+            category: ""
+        });
+        setImageFile(null);
+        setImagePreview("");
+    };
+
+    const handleCreateStore = async (event) => {
+        event.preventDefault();
+
+        if (isSubmitting) {
+            return;
+        }
+
+        const ownerId = formValues.ownerId.trim();
+        const payload = {
+            ownerId,
+            name: formValues.name.trim(),
+            description: formValues.description.trim(),
+            address: formValues.address.trim(),
+            category: formValues.category.trim()
+        };
+
+        setFormError("");
+        setFormSuccess("");
+
+        if (!payload.ownerId) {
+            setFormError("Store owner id is required.");
+            return;
+        }
+
+        if (!Number.isFinite(Number.parseInt(payload.ownerId, 10))) {
+            setFormError("Store owner id must be a number.");
+            return;
+        }
+
+        if (!payload.name || !payload.description || !payload.address || !payload.category) {
+            setFormError("All store fields are required.");
+            return;
+        }
+
+        if (!imageFile) {
+            setFormError("Store image is required.");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("ownerId", payload.ownerId);
+        formData.append("name", payload.name);
+        formData.append("description", payload.description);
+        formData.append("address", payload.address);
+        formData.append("category", payload.category);
+        formData.append("image", imageFile);
+
+        setIsSubmitting(true);
+
+        try {
+            const response = await fetch(`${baseUrl}/api/stores`, {
+                method: "POST",
+                body: formData
+            });
+
+            const data = await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+                throw new Error(data.message || "Unable to create store.");
+            }
+
+            if (data.store) {
+                setStores((prev) => [data.store, ...prev]);
+            }
+
+            setFormSuccess("Store created successfully.");
+            resetForm();
+        } catch (error) {
+            setFormError(error.message || "Unable to create store.");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleDelete = async (storeId) => {
+        if (!storeId || deletingId) {
+            return;
+        }
+
+        const confirmed = window.confirm("Delete this store? This action cannot be undone.");
+        if (!confirmed) {
+            return;
+        }
+
+        setActionError("");
+        setDeletingId(storeId);
+
+        try {
+            const response = await fetch(`${baseUrl}/api/admin/stores/${storeId}`, {
+                method: "DELETE"
+            });
+
+            const data = await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+                throw new Error(data.message || "Unable to delete store.");
+            }
+
+            setStores((prev) => prev.filter((store) => store.id !== storeId));
+        } catch (error) {
+            setActionError(error.message || "Unable to delete store.");
+        } finally {
+            setDeletingId(null);
+        }
+    };
 
     return (
         <div className="relative min-h-screen overflow-hidden bg-slate-50 text-slate-900">
@@ -95,6 +297,22 @@ const StoreList = () => {
                         </p>
                     </div>
                     <div className="flex flex-wrap items-center gap-3">
+                        <label className="relative">
+                            <input
+                                type="text"
+                                value={searchQuery}
+                                onChange={(event) => setSearchQuery(event.target.value)}
+                                placeholder="Search stores"
+                                className="w-56 rounded-full border border-slate-200 bg-white/90 px-4 py-2 text-xs font-semibold text-slate-700 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+                            />
+                        </label>
+                        <button
+                            type="button"
+                            onClick={() => setShowCreateForm((prev) => !prev)}
+                            className="rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-xs font-semibold text-blue-600 shadow-sm transition hover:border-blue-300"
+                        >
+                            {showCreateForm ? "Hide form" : "Create new store"}
+                        </button>
                         <span className="rounded-2xl border border-slate-200/70 bg-white/80 px-4 py-3 text-sm text-slate-600">
                             <span className="font-semibold text-slate-900">{storeCountLabel}</span>
                         </span>
@@ -106,6 +324,136 @@ const StoreList = () => {
                         </Link>
                     </div>
                 </header>
+
+                {showCreateForm && (
+                    <section className="mt-8 rounded-3xl border border-slate-200/70 bg-white/90 p-6 shadow-xl backdrop-blur">
+                        <div className="flex flex-wrap items-start justify-between gap-4">
+                            <div>
+                                <h2 className="text-xl font-semibold text-slate-900">Create new store</h2>
+                                <p className="text-sm text-slate-500">Add a store under an existing owner.</p>
+                            </div>
+                        </div>
+
+                        <form onSubmit={handleCreateStore} className="mt-6 space-y-4">
+                            <div className="grid gap-4 md:grid-cols-2">
+                                <label className="block text-sm font-semibold text-slate-700">
+                                    Store owner ID
+                                    <input
+                                        type="number"
+                                        name="ownerId"
+                                        value={formValues.ownerId}
+                                        onChange={handleInputChange}
+                                        placeholder="Enter store owner ID"
+                                        className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+                                        required
+                                    />
+                                </label>
+
+                                <label className="block text-sm font-semibold text-slate-700">
+                                    Store name
+                                    <input
+                                        type="text"
+                                        name="name"
+                                        value={formValues.name}
+                                        onChange={handleInputChange}
+                                        placeholder="Enter store name"
+                                        className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+                                        required
+                                    />
+                                </label>
+                            </div>
+
+                            <label className="block text-sm font-semibold text-slate-700">
+                                Description
+                                <textarea
+                                    name="description"
+                                    value={formValues.description}
+                                    onChange={handleInputChange}
+                                    placeholder="Describe the store"
+                                    rows={4}
+                                    className="mt-2 w-full resize-none rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+                                    required
+                                />
+                            </label>
+
+                            <div className="grid gap-4 md:grid-cols-2">
+                                <label className="block text-sm font-semibold text-slate-700">
+                                    Address
+                                    <input
+                                        type="text"
+                                        name="address"
+                                        value={formValues.address}
+                                        onChange={handleInputChange}
+                                        placeholder="Store address"
+                                        className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+                                        required
+                                    />
+                                </label>
+
+                                <label className="block text-sm font-semibold text-slate-700">
+                                    Category
+                                    <input
+                                        type="text"
+                                        name="category"
+                                        value={formValues.category}
+                                        onChange={handleInputChange}
+                                        placeholder="Ex: Grocery, Fashion"
+                                        className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+                                        required
+                                    />
+                                </label>
+                            </div>
+
+                            <div className="grid gap-4 sm:grid-cols-[1fr_200px] sm:items-center">
+                                <label className="block text-sm font-semibold text-slate-700">
+                                    Store image
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleImageChange}
+                                        className="mt-2 w-full text-sm text-slate-600 file:mr-4 file:rounded-full file:border-0 file:bg-blue-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-blue-500"
+                                        required
+                                    />
+                                </label>
+                                <div className="flex h-32 items-center justify-center overflow-hidden rounded-2xl border border-dashed border-slate-200 bg-slate-50">
+                                    {imagePreview ? (
+                                        <img
+                                            src={imagePreview}
+                                            alt="Store preview"
+                                            className="h-full w-full object-cover"
+                                        />
+                                    ) : (
+                                        <span className="text-xs text-slate-400">Upload image</span>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="flex flex-wrap items-center gap-3">
+                                <button
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                    className="rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-200 transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-70"
+                                >
+                                    {isSubmitting ? "Creating store..." : "Create store"}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={resetForm}
+                                    className="rounded-xl border border-slate-200 bg-white/80 px-6 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300"
+                                >
+                                    Clear
+                                </button>
+                            </div>
+                        </form>
+
+                        {formError && (
+                            <p className="mt-4 text-sm text-red-600">{formError}</p>
+                        )}
+                        {formSuccess && (
+                            <p className="mt-4 text-sm text-emerald-600">{formSuccess}</p>
+                        )}
+                    </section>
+                )}
 
                 <section className="mt-8">
                     {isLoading && (
@@ -130,15 +478,27 @@ const StoreList = () => {
                         </div>
                     )}
 
+                    {!isLoading && !listError && actionError && (
+                        <div className="mb-6 rounded-2xl border border-red-100 bg-red-50 px-4 py-4 text-sm text-red-700">
+                            {actionError}
+                        </div>
+                    )}
+
                     {!isLoading && !listError && stores.length === 0 && (
                         <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-sm text-slate-500">
                             No stores available yet.
                         </div>
                     )}
 
-                    {!isLoading && !listError && stores.length > 0 && (
+                    {!isLoading && !listError && stores.length > 0 && filteredStores.length === 0 && (
+                        <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-sm text-slate-500">
+                            No stores match your search.
+                        </div>
+                    )}
+
+                    {!isLoading && !listError && filteredStores.length > 0 && (
                         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-                            {stores.map((store) => {
+                            {filteredStores.map((store) => {
                                 const { reviewCount, averageRating } = getRatingSummary(store);
 
                                 return (
@@ -193,6 +553,15 @@ const StoreList = () => {
                                                     <p>Created on {formatDate(store.createdAt)}</p>
                                                 )}
                                             </div>
+
+                                            <button
+                                                type="button"
+                                                onClick={() => handleDelete(store.id)}
+                                                disabled={deletingId === store.id}
+                                                className="mt-3 inline-flex items-center justify-center rounded-full border border-red-200 bg-red-50 px-4 py-2 text-xs font-semibold text-red-600 transition hover:border-red-300 disabled:cursor-not-allowed disabled:opacity-70"
+                                            >
+                                                {deletingId === store.id ? "Deleting..." : "Delete store"}
+                                            </button>
                                         </div>
                                     </article>
                                 );

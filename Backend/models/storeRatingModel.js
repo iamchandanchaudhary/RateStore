@@ -45,3 +45,21 @@ export const getUserRatingForStore = async (storeId, userId) => {
 
     return rows[0]?.rating ?? null;
 };
+
+export const deleteStoreRatingsByStoreId = async (storeId) => {
+    const [result] = await dbPromise.query(
+        "DELETE FROM store_ratings WHERE store_id = ?",
+        [storeId]
+    );
+
+    return result.affectedRows;
+};
+
+export const deleteStoreRatingsByUserId = async (userId) => {
+    const [result] = await dbPromise.query(
+        "DELETE FROM store_ratings WHERE user_id = ?",
+        [userId]
+    );
+
+    return result.affectedRows;
+};

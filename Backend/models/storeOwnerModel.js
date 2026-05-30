@@ -68,3 +68,12 @@ export const listStoreOwners = async () => {
 
     return rows;
 };
+
+export const deleteStoreOwnerById = async (ownerId) => {
+    const [result] = await dbPromise.query(
+        "DELETE FROM store_owners WHERE id = ?",
+        [ownerId]
+    );
+
+    return result.affectedRows;
+};
