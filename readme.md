@@ -1,6 +1,14 @@
-# RateStore
+<h1 align="center">RateStore</h1>
 
-RateStore is a full-stack platform for discovering, rating, and managing stores. It supports three roles: users, store owners, and system administrators.
+<p align="center">
+  <strong>RateStore is a full-stack platform for discovering, rating, and managing stores. It supports three roles: users, store owners, and system administrators.</strong>
+</p>
+
+<p align="center">
+  <a href="https://ratestore.onrender.com/">Live Website</a>
+</p>
+
+---
 
 ## Roles
 
